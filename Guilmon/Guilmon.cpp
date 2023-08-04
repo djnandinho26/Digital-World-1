@@ -3,7 +3,7 @@
 #include <string>
 #include <sstream>
 #include <windows.h>
-#include <detours.h>
+#include "detours.h"
 
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "detours.lib")
