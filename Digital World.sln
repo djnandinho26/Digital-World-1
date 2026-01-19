@@ -5,7 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hypnos Server", "Hypnos Ser
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Guilmon", "Guilmon\Guilmon.vcxproj", "{92AE5699-1E6A-44B6-8F17-EBA1C3382CF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yggdrasil", "DigitalWorld\Yggdrasil.csproj", "{F26E3C69-CF5A-4218-AC13-410D6B5A9E1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yggdrasil", "Yggdrasil\Yggdrasil.csproj", "{F26E3C69-CF5A-4218-AC13-410D6B5A9E1D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth Server", "Auth Server\Auth Server.csproj", "{CB67DEA0-900C-40DE-B659-98CE28D5702E}"
 EndProject

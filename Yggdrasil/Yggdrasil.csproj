@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F26E3C69-CF5A-4218-AC13-410D6B5A9E1D}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Digital_World</RootNamespace>
+    <AssemblyName>Yggdrasil</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Complete|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\..\..\Desktop\DMO\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisLogFile>bin\Debug\Yggdrasil.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;D:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;D:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="lua51">
+      <HintPath>..\..\..\..\..\..\..\C# Resources\Lua\lua51.dll</HintPath>
+    </Reference>
+    <Reference Include="LuaInterface">
+      <HintPath>..\..\..\..\..\..\..\C# Resources\Lua\LuaInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data, Version=6.4.4.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Client.cs" />
+    <Compile Include="Database - Game.cs" />
+    <Compile Include="Database - Lobby.cs" />
+    <Compile Include="Database.cs" />
+    <Compile Include="Database\DigimonDB.cs" />
+    <Compile Include="Database\Evolve.cs" />
+    <Compile Include="Database\ItemDB.cs" />
+    <Compile Include="Database\MapDB.cs" />
+    <Compile Include="Database\MapPortals.cs" />
+    <Compile Include="Database\MonsterDB.cs" />
+    <Compile Include="Database\TacticsDB.cs" />
+    <Compile Include="Entities\Character.cs" />
+    <Compile Include="Entities\Digimon.cs" />
+    <Compile Include="Entities\GameMap.cs" />
+    <Compile Include="Entities\Item.cs" />
+    <Compile Include="Entities\Quest.cs" />
+    <Compile Include="Helpers\BitReader.cs" />
+    <Compile Include="Helpers\DigimonStats.cs" />
+    <Compile Include="Helpers\Equipment.cs" />
+    <Compile Include="Helpers\EvolvedForm.cs" />
+    <Compile Include="Helpers\Import.cs" />
+    <Compile Include="Helpers\ItemList.cs" />
+    <Compile Include="Helpers\Logger.cs" />
+    <Compile Include="Helpers\Position.cs" />
+    <Compile Include="Helpers\Query.cs" />
+    <Compile Include="Helpers\QuestList.cs" />
+    <Compile Include="Helpers\Settings.cs" />
+    <Compile Include="Network\Startup.cs" />
+    <Compile Include="Packets\BasePacket.cs" />
+    <Compile Include="Packets\Game\AddScannedItem.cs" />
+    <Compile Include="Packets\Game\Chat\ChatNormal.cs" />
+    <Compile Include="Packets\Game\Combat\CombatOn.cs" />
+    <Compile Include="Packets\Game\Combat\UseSkill.cs" />
+    <Compile Include="Packets\Game\Interface\Actions\DigimonArchive.cs" />
+    <Compile Include="Packets\Game\Interface\Hatching\AllowEggHatch.cs" />
+    <Compile Include="Packets\Game\Interface\Hatching\Hatch.cs" />
+    <Compile Include="Packets\Game\Interface\Update\ChangeSize.cs" />
+    <Compile Include="Packets\Game\Interface\Hatching\DataInputFailure.cs" />
+    <Compile Include="Packets\Game\Interface\MovePlayer.cs" />
+    <Compile Include="Packets\Game\Interface\Actions\ReturnEggs.cs" />
+    <Compile Include="Packets\Game\Interface\Actions\ScanEggs.cs" />
+    <Compile Include="Packets\Game\SpawnObject.cs" />
+    <Compile Include="Packets\Game\StopRideMode.cs" />
+    <Compile Include="Packets\Game\Interface\Map\DespawnPlayer.cs" />
+    <Compile Include="Packets\Game\Interface\Hatching\BroadcastHatch.cs" />
+    <Compile Include="Packets\Game\Interface\CharInfo.cs" />
+    <Compile Include="Packets\Game\Chat\Chat.cs" />
+    <Compile Include="Packets\Game\Interface\DigimonSwitch.cs" />
+    <Compile Include="Packets\Game\EquipItem.cs" />
+    <Compile Include="Packets\Game\Interface\Evolve.cs" />
+    <Compile Include="Packets\Game\Interface\CashWHItem.cs" />
+    <Compile Include="Packets\Game\Interface\FriendList.cs" />
+    <Compile Include="Packets\Game\Interface\MapChange.cs" />
+    <Compile Include="Packets\Game\Interface\SendHandle.cs" />
+    <Compile Include="Packets\Game\Interface\Map\SpawnPlayer.cs" />
+    <Compile Include="Packets\Game\Packet1704.cs" />
+    <Compile Include="Packets\Game\Packet26B1.cs" />
+    <Compile Include="Packets\Game\Combat\Status.cs" />
+    <Compile Include="Packets\Game\Interface\EventTimer.cs" />
+    <Compile Include="Packets\Game\Interface\PickupItem.cs" />
+    <Compile Include="Packets\Game\Interface\TradeItem.cs" />
+    <Compile Include="Packets\Game\Interface\Update\UpdateGold.cs" />
+    <Compile Include="Packets\Game\Packet3EC.cs" />
+    <Compile Include="Packets\Game\RidingMode.cs" />
+    <Compile Include="Packets\Game\StoreDigimon.cs" />
+    <Compile Include="Packets\Game\Interface\Update\UpdateEquipment.cs" />
+    <Compile Include="Packets\Game\Interface\Update\UpdateLevel.cs" />
+    <Compile Include="Packets\Game\Interface\Update\UpdateStats.cs" />
+    <Compile Include="Packets\Lobby\CharDelete.cs" />
+    <Compile Include="Packets\Lobby\CharList.cs" />
+    <Compile Include="Packets\Lobby\ConfirmCreate.cs" />
+    <Compile Include="Packets\Lobby\NameCheck.cs" />
+    <Compile Include="Packets\Lobby\ServerIP.cs" />
+    <Compile Include="Packets\PacketFFEF.cs" />
+    <Compile Include="Packets\PacketFFFF1.cs" />
+    <Compile Include="Packets\PacketReader.cs" />
+    <Compile Include="Packets\Auth\ServerIP.cs" />
+    <Compile Include="Packets\Auth\ServerList.cs" />
+    <Compile Include="Packets\Auth\LoginMessage.cs" />
+    <Compile Include="Packets\PacketWriter.cs" />
+    <Compile Include="Network\Socket.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 3.2</PostBuildEvent>
+  </PropertyGroup>
+</Project>
