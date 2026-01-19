@@ -12,7 +12,9 @@ namespace Digital_World.Helpers
     public class QuestList
     {
         private Quest[] list = new Quest[20];
+#pragma warning disable SYSLIB0011 // BinaryFormatter is obsolete
         private static BinaryFormatter f = new BinaryFormatter();
+#pragma warning restore SYSLIB0011
 
         public QuestList()
         {

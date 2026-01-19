@@ -23,7 +23,7 @@ namespace Digital_World
 
         public void WriteByte(byte value)
         {
-            m_stream.Write(BitConverter.GetBytes(value), 0, 1);
+            m_stream.Write(new byte[] { value }, 0, 1);
         }
 
         public void WriteShort(short value)
