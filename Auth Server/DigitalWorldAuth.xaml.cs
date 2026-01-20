@@ -24,6 +24,7 @@ namespace Digital_World
     public partial class AuthMainWin : Window
     {
         SocketWrapper server;
+        HttpServer httpServer;
         List<Client> clients = new List<Client>();
         Settings Opt;
 
@@ -38,11 +39,25 @@ namespace Digital_World
 
             Logger _writer = new Logger(tLog);
 
-            Opt = Settings.Deserialize();
+            Opt = Settings.Deserialize("Settings.json");
+            
+            // Iniciar servidor HTTP/HTTPS
+            httpServer = new HttpServer(
+                Opt.AuthServer.PatchPath, 
+                Opt.AuthServer.HttpPort,
+                Opt.AuthServer.HttpsPort,
+                Opt.AuthServer.HttpsEnabled,
+                Opt.AuthServer.CertificatePath,
+                Opt.AuthServer.CertificatePassword
+            );
+            
             if (Opt.AuthServer.AutoStart)
             {
                 ServerInfo info = new ServerInfo(Opt.AuthServer.Port, Opt.AuthServer.IP);
                 server.Listen(info);
+                
+                if (Opt.AuthServer.HttpEnabled)
+                    httpServer.Start();
             }
         }
 
@@ -74,11 +89,17 @@ namespace Digital_World
             ServerInfo info = new ServerInfo(Opt.AuthServer.Port,
                  Opt.AuthServer.IP);
             server.Listen(info);
+            
+            if (Opt.AuthServer.HttpEnabled && !httpServer.IsRunning)
+                httpServer.Start();
         }
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             server.Stop();
+            
+            if (httpServer.IsRunning)
+                httpServer.Stop();
             
             foreach(Client client in clients)
             {

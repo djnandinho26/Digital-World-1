@@ -36,6 +36,14 @@ namespace Digital_World
             tDBUser.Text = mySettings.Database.Username;
             tDBPass.Password = mySettings.Database.Password;
             tDBSchema.Text = mySettings.Database.Schema;
+            
+            // Carregar configurações HTTP
+            chkHttpEnabled.IsChecked = new bool?(mySettings.AuthServer.HttpEnabled);
+            tHttpPort.Text = mySettings.AuthServer.HttpPort.ToString();
+            chkHttpsEnabled.IsChecked = new bool?(mySettings.AuthServer.HttpsEnabled);
+            tHttpsPort.Text = mySettings.AuthServer.HttpsPort.ToString();
+            tPatchPath.Text = mySettings.AuthServer.PatchPath;
+            tCertPath.Text = mySettings.AuthServer.CertificatePath;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
@@ -56,6 +64,28 @@ namespace Digital_World
             mySettings.Database.Username = tDBUser.Text;
             mySettings.Database.Password = tDBPass.Password;
             mySettings.Database.Schema = tDBSchema.Text;
+            
+            // Salvar configurações HTTP
+            mySettings.AuthServer.HttpEnabled = chkHttpEnabled.IsChecked.Value;
+            mySettings.AuthServer.HttpsEnabled = chkHttpsEnabled.IsChecked.Value;
+            mySettings.AuthServer.PatchPath = tPatchPath.Text;
+            mySettings.AuthServer.CertificatePath = tCertPath.Text;
+            try
+            {
+                mySettings.AuthServer.HttpPort = int.Parse(tHttpPort.Text);
+            }
+            catch (FormatException)
+            {
+                mySettings.AuthServer.HttpPort = 8080;
+            }
+            try
+            {
+                mySettings.AuthServer.HttpsPort = int.Parse(tHttpsPort.Text);
+            }
+            catch (FormatException)
+            {
+                mySettings.AuthServer.HttpsPort = 8443;
+            }
             
             mySettings.Serialize("Settings.json");
 

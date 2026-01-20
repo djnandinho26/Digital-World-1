@@ -68,6 +68,27 @@ namespace Digital_World.Helpers
 
         public class AuthServerSettings:ServerSettings
         {
+            [JsonPropertyName("HttpPort")]
+            public int HttpPort { get; set; } = 8080;
+            
+            [JsonPropertyName("HttpsPort")]
+            public int HttpsPort { get; set; } = 8443;
+            
+            [JsonPropertyName("PatchPath")]
+            public string PatchPath { get; set; } = "C:\\DMOServer\\HttpServer\\www";
+            
+            [JsonPropertyName("HttpEnabled")]
+            public bool HttpEnabled { get; set; } = true;
+            
+            [JsonPropertyName("HttpsEnabled")]
+            public bool HttpsEnabled { get; set; } = false;
+            
+            [JsonPropertyName("CertificatePath")]
+            public string CertificatePath { get; set; } = "C:\\DMOServer\\HttpServer\\cert\\certificate.pfx";
+            
+            [JsonPropertyName("CertificatePassword")]
+            public string CertificatePassword { get; set; } = "";
+
             public AuthServerSettings()
             {
                 this.AutoStart = true;
