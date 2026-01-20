@@ -64,7 +64,7 @@ namespace Digital_World
                 case "settings":
                     {
                         Settings s = new Settings();
-                        s.Serialize("Settings.xml");
+                        s.Serialize("Settings.json");
                         break;
                     }
                 case "hatch":

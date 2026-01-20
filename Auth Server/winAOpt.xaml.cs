@@ -25,11 +25,17 @@ namespace Digital_World
         {
             InitializeComponent();
 
-            mySettings = Settings.Deserialize("Settings.xml");
+            mySettings = Settings.Deserialize("Settings.json");
 
             tHost.Text = mySettings.AuthServer.Host;
             tPort.Text = mySettings.AuthServer.Port.ToString();
             chkStart.IsChecked = new bool?(mySettings.AuthServer.AutoStart);
+            
+            // Carregar configurações do database
+            tDBHost.Text = mySettings.Database.Host;
+            tDBUser.Text = mySettings.Database.Username;
+            tDBPass.Password = mySettings.Database.Password;
+            tDBSchema.Text = mySettings.Database.Schema;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
@@ -42,9 +48,16 @@ namespace Digital_World
             }
             catch (FormatException)
             {
-                mySettings.AuthServer.Port = 6999;
+                mySettings.AuthServer.Port = 7030;
             }
-            mySettings.Serialize("Settings.xml");
+            
+            // Salvar configurações do database
+            mySettings.Database.Host = tDBHost.Text;
+            mySettings.Database.Username = tDBUser.Text;
+            mySettings.Database.Password = tDBPass.Password;
+            mySettings.Database.Schema = tDBSchema.Text;
+            
+            mySettings.Serialize("Settings.json");
 
             this.DialogResult = new bool?(true);
         }

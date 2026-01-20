@@ -3,34 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using System.Xml.Serialization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Collections;
 using System.Net;
 
 namespace Digital_World.Helpers
 {
-    [Serializable()]
     public class Settings
     {
         public class DatabaseSettings
         {
-            [XmlAttribute("Host")]
-            public string Host = "localhost";
-            [XmlAttribute("Username")]
-            public string Username = "";
-            [XmlAttribute("Password")]
-            public string Password = "";
-            [XmlAttribute("Schema")]
-            public string Schema = "";
+            [JsonPropertyName("Host")]
+            public string Host { get; set; } = "localhost";
+            [JsonPropertyName("Username")]
+            public string Username { get; set; } = "";
+            [JsonPropertyName("Password")]
+            public string Password { get; set; } = "";
+            [JsonPropertyName("Schema")]
+            public string Schema { get; set; } = "";
         }
 
         public class ServerSettings
         {
-            public string Host = "DOUBLE";
-            public int Port = 6999;
-            public bool AutoStart = false;
+            public string Host { get; set; } = "0.0.0.0";
+            public int Port { get; set; } = 7030;
+            public bool AutoStart { get; set; } = false;
 
-            [XmlIgnore()]
+            [JsonIgnore]
             public IPEndPoint EndPoint
             {
                 get
@@ -41,12 +41,12 @@ namespace Digital_World.Helpers
                 }
             }
 
-            [XmlIgnore()]
+            [JsonIgnore]
             public IPAddress IP
             {
                 get
                 {
-                    IPAddress myIp = null;
+                    IPAddress? myIp = null;
                     if (!IPAddress.TryParse(Host, out myIp))
                     {
                         IPAddress[] List = Dns.GetHostEntry(Host).AddressList;
@@ -80,17 +80,17 @@ namespace Digital_World.Helpers
             public LobbyServerSettings()
             {
                 this.AutoStart = true;
-                this.Port = 699;
+                this.Port = 7030;
             }
         }
 
         public class GameServerSettings : ServerSettings
         {
-            public HatchRateSetting HatchRates = new HatchRateSetting();
+            public HatchRateSetting HatchRates { get; set; } = new HatchRateSetting();
 
             public class HatchRateSetting
             {
-                [XmlIgnore()]
+                [JsonIgnore]
                 private double[][] HatchRate = new double[5][] { new double[3], new double[3], new double[3], new double[3], new double[3] };
 
                 public HatchRateSetting()
@@ -104,12 +104,12 @@ namespace Digital_World.Helpers
 
                 public class HatchLevelSetting
                 {
-                    [XmlAttribute("Success")]
-                    public double Success = 1.0d;
-                    [XmlAttribute("Failure")]
-                    public double Failure = 0.0d;
-                    [XmlAttribute("Broken")]
-                    public double Broken = 0.0d;
+                    [JsonPropertyName("Success")]
+                    public double Success { get; set; } = 1.0d;
+                    [JsonPropertyName("Failure")]
+                    public double Failure { get; set; } = 0.0d;
+                    [JsonPropertyName("Broken")]
+                    public double Broken { get; set; } = 0.0d;
 
                     public HatchLevelSetting(double success, double failure, double broken)
                     {
@@ -208,7 +208,7 @@ namespace Digital_World.Helpers
                     }
                 }
 
-                [XmlIgnore()]
+                [JsonIgnore]
                 private Random RNG = new Random();
 
                 public int Hatch(int level)
@@ -233,10 +233,10 @@ namespace Digital_World.Helpers
 
             public class SizeSetting
             {
-                [XmlAttribute("min")]
-                public int Min = 0;
-                [XmlAttribute("max")]
-                public int Max = 0;
+                [JsonPropertyName("min")]
+                public int Min { get; set; } = 0;
+                [JsonPropertyName("max")]
+                public int Max { get; set; } = 0;
 
                 public SizeSetting() { }
 
@@ -278,7 +278,7 @@ namespace Digital_World.Helpers
                 }
             }
 
-            public SizeSettingContainer SizeRanges = new SizeSettingContainer();
+            public SizeSettingContainer SizeRanges { get; set; } = new SizeSettingContainer();
 
             public GameServerSettings()
             {
@@ -294,49 +294,86 @@ namespace Digital_World.Helpers
             GameServer = new GameServerSettings();
         }
 
-        [XmlElement("Database")]
-        public DatabaseSettings Database = new DatabaseSettings();
-        [XmlElement("LobbyServer")]
-        public LobbyServerSettings LobbyServer = new LobbyServerSettings();
-        [XmlElement("AuthServer")]
-        public AuthServerSettings AuthServer = new AuthServerSettings();
-        [XmlElement("GameServer")]
-        public GameServerSettings GameServer = new GameServerSettings();
+        [JsonPropertyName("Database")]
+        public DatabaseSettings Database { get; set; } = new DatabaseSettings();
+        [JsonPropertyName("LobbyServer")]
+        public LobbyServerSettings LobbyServer { get; set; } = new LobbyServerSettings();
+        [JsonPropertyName("AuthServer")]
+        public AuthServerSettings AuthServer { get; set; } = new AuthServerSettings();
+        [JsonPropertyName("GameServer")]
+        public GameServerSettings GameServer { get; set; } = new GameServerSettings();
 
         public void Serialize(string fileName)
         {
-            XmlSerializer xml = new XmlSerializer(typeof(Settings));
-            using (Stream s = File.Open(fileName, FileMode.Create))
-            {
-                xml.Serialize(s, this);
-            }
+            var options = new JsonSerializerOptions 
+            { 
+                WriteIndented = true,
+                PropertyNamingPolicy = null
+            };
+            string json = JsonSerializer.Serialize(this, options);
+            File.WriteAllText(fileName, json);
         }
 
         public static Settings Deserialize(string fileName)
         {
-            Settings Settings = new Settings();
-            if (File.Exists(fileName))
+            Settings settings = new Settings();
+            
+            // Try JSON first
+            string jsonFileName = Path.ChangeExtension(fileName, ".json");
+            if (File.Exists(jsonFileName))
             {
-                XmlSerializer xml = new XmlSerializer(typeof(Settings));
-                using (Stream s = File.OpenRead(fileName))
+                try
                 {
-                    Settings = (Settings)xml.Deserialize(s);
+                    string json = File.ReadAllText(jsonFileName);
+                    var options = new JsonSerializerOptions { PropertyNamingPolicy = null };
+                    settings = JsonSerializer.Deserialize<Settings>(json, options) ?? new Settings();
                 }
-                SqlDB.SetInfo(Settings.Database.Host, Settings.Database.Username, Settings.Database.Password, Settings.Database.Schema);
+                catch
+                {
+                    // Se falhar ao ler JSON, cria um novo com valores padrão
+                    settings = new Settings();
+                    settings.Serialize(jsonFileName);
+                }
+            }
+            // Fallback to XML and auto-migrate
+            else if (File.Exists(fileName))
+            {
+                try
+                {
+                    var xml = new System.Xml.Serialization.XmlSerializer(typeof(Settings));
+                    using (Stream s = File.OpenRead(fileName))
+                    {
+                        settings = (Settings?)xml.Deserialize(s) ?? new Settings();
+                    }
+                    // Auto-migrate to JSON
+                    settings.Serialize(jsonFileName);
+                    try { File.Delete(fileName); } catch { }
+                }
+                catch
+                {
+                    // Se falhar ao migrar, cria JSON novo
+                    settings = new Settings();
+                    settings.Serialize(jsonFileName);
+                }
             }
             else
-                Settings.Serialize("Settings.xml");
-            return Settings;
+            {
+                // Arquivo não existe - cria JSON com valores padrão
+                settings.Serialize(jsonFileName);
+            }
+            
+            SqlDB.SetInfo(settings.Database.Host, settings.Database.Username, settings.Database.Password, settings.Database.Schema);
+            return settings;
         }
 
         public static Settings Deserialize()
         {
-            return Deserialize("Settings.xml");
+            return Deserialize("Settings.json");
         }
 
         public void Serialize()
         {
-            Serialize("Settings.xml");
+            Serialize("Settings.json");
         }
     }
 }
