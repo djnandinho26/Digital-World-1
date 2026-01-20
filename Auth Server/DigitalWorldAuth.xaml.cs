@@ -48,7 +48,8 @@ namespace Digital_World
                 Opt.AuthServer.HttpsPort,
                 Opt.AuthServer.HttpsEnabled,
                 Opt.AuthServer.CertificatePath,
-                Opt.AuthServer.CertificatePassword
+                Opt.AuthServer.CertificatePassword,
+                Opt.AuthServer.CertificateType
             );
             
             if (Opt.AuthServer.AutoStart)

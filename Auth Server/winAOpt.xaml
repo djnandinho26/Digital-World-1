@@ -84,8 +84,11 @@
                     <Label Grid.Row="4" Grid.Column="0" Content="Patch Path" VerticalAlignment="Center" />
                     <TextBox Grid.Row="4" Grid.Column="1" Name="tPatchPath" Text="C:\DMOServer\HttpServer\www" Margin="5,2" />
                     
-                    <Label Grid.Row="5" Grid.Column="0" Content="Cert Path" VerticalAlignment="Center" />
-                    <TextBox Grid.Row="5" Grid.Column="1" Name="tCertPath" Margin="5,2" />
+                    <Label Grid.Row="5" Grid.Column="0" Content="Cert Type" VerticalAlignment="Center" />
+                    <ComboBox Grid.Row="5" Grid.Column="1" Name="cbCertType" Margin="5,2" SelectedIndex="0">
+                        <ComboBoxItem Content="Auto-gerado (Self-signed)"/>
+                        <ComboBoxItem Content="ZeroSSL (CA Certificate)"/>
+                    </ComboBox>
                 </Grid>
             </GroupBox>
         </StackPanel>

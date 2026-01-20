@@ -43,7 +43,9 @@ namespace Digital_World
             chkHttpsEnabled.IsChecked = new bool?(mySettings.AuthServer.HttpsEnabled);
             tHttpsPort.Text = mySettings.AuthServer.HttpsPort.ToString();
             tPatchPath.Text = mySettings.AuthServer.PatchPath;
-            tCertPath.Text = mySettings.AuthServer.CertificatePath;
+            
+            // Carregar tipo de certificado
+            cbCertType.SelectedIndex = (mySettings.AuthServer.CertificateType == "ZeroSSL") ? 1 : 0;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
@@ -69,7 +71,10 @@ namespace Digital_World
             mySettings.AuthServer.HttpEnabled = chkHttpEnabled.IsChecked.Value;
             mySettings.AuthServer.HttpsEnabled = chkHttpsEnabled.IsChecked.Value;
             mySettings.AuthServer.PatchPath = tPatchPath.Text;
-            mySettings.AuthServer.CertificatePath = tCertPath.Text;
+            
+            // Salvar tipo de certificado
+            mySettings.AuthServer.CertificateType = (cbCertType.SelectedIndex == 1) ? "ZeroSSL" : "Auto";
+            
             try
             {
                 mySettings.AuthServer.HttpPort = int.Parse(tHttpPort.Text);

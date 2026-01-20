@@ -88,6 +88,9 @@ namespace Digital_World.Helpers
             
             [JsonPropertyName("CertificatePassword")]
             public string CertificatePassword { get; set; } = "";
+            
+            [JsonPropertyName("CertificateType")]
+            public string CertificateType { get; set; } = "Auto"; // "Auto" ou "ZeroSSL"
 
             public AuthServerSettings()
             {
