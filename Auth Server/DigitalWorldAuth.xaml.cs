@@ -114,10 +114,10 @@ namespace Digital_World
         {
             server.Stop();
             
-            if (httpServer.IsRunning)
+            if (httpServer != null && httpServer.IsRunning)
                 httpServer.Stop();
                 
-            if (ftpServer.IsRunning)
+            if (ftpServer != null && ftpServer.IsRunning)
                 ftpServer.Stop();
             
             foreach(Client client in clients)
