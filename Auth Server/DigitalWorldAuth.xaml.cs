@@ -132,6 +132,13 @@ namespace Digital_World
             Options winOpt = new Options();
             if (winOpt.ShowDialog().Value)
             {
+                // Parar servidores ativos antes de recriar
+                if (httpServer != null && httpServer.IsRunning)
+                    httpServer.Stop();
+                
+                if (ftpServer != null && ftpServer.IsRunning)
+                    ftpServer.Stop();
+                
                 Opt = Settings.Deserialize();
                 
                 // Atualizar servidores com novas configurações

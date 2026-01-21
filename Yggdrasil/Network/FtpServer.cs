@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Digital_World.Network
 {
     /// <summary>
-    /// Servidor FTP básico - SOMENTE UPLOAD (Write-Only)
+    /// Servidor FTP básico - SOMENTE UPLOAD (Somente Envio)
     /// Não permite leitura, listagem ou exclusão de arquivos
     /// </summary>
     public class FtpServer
@@ -38,7 +38,7 @@ namespace Digital_World.Network
             if (!Directory.Exists(uploadPath))
             {
                 Directory.CreateDirectory(uploadPath);
-                Console.WriteLine($"[FTP] Criada pasta: {uploadPath}");
+                Console.WriteLine($"[FTP] Pasta criada: {uploadPath}");
             }
 
             try
@@ -47,8 +47,8 @@ namespace Digital_World.Network
                 listener.Start();
                 isRunning = true;
                 Console.WriteLine($"[FTP] Servidor iniciado na porta {port}");
-                Console.WriteLine($"[FTP] Modo: SOMENTE UPLOAD (Write-Only)");
-                Console.WriteLine($"[FTP] Salvando arquivos em: {uploadPath}");
+                Console.WriteLine($"[FTP] Modo: SOMENTE ENVIO (Upload Only)");
+                Console.WriteLine($"[FTP] Pasta de destino: {uploadPath}");
                 Console.WriteLine($"[FTP] Usuário: {username}");
 
                 Task.Run(() => Listen());
@@ -98,7 +98,7 @@ namespace Digital_World.Network
                 using (var writer = new StreamWriter(stream, Encoding.ASCII) { AutoFlush = true })
                 {
                     // Enviar mensagem de boas-vindas
-                    SendResponse(writer, 220, "Digital World FTP Server - UPLOAD ONLY");
+                    SendResponse(writer, 220, "Servidor FTP Digital World - SOMENTE ENVIO");
 
                     bool authenticated = false;
                     string currentUser = "";
@@ -118,19 +118,19 @@ namespace Digital_World.Network
                         {
                             case "USER":
                                 currentUser = argument;
-                                SendResponse(writer, 331, "Password required");
+                                SendResponse(writer, 331, "Senha requerida");
                                 break;
 
                             case "PASS":
                                 if (currentUser == username && argument == password)
                                 {
                                     authenticated = true;
-                                    SendResponse(writer, 230, "User logged in (Upload Only Mode)");
+                                    SendResponse(writer, 230, "Usuário autenticado (Modo Somente Envio)");
                                     Console.WriteLine($"[FTP] {clientAddress} autenticado como {currentUser}");
                                 }
                                 else
                                 {
-                                    SendResponse(writer, 530, "Login incorrect");
+                                    SendResponse(writer, 530, "Login incorreto");
                                     Console.WriteLine($"[FTP] {clientAddress} falha na autenticação");
                                 }
                                 break;
@@ -138,7 +138,7 @@ namespace Digital_World.Network
                             case "SYST":
                                 if (!authenticated)
                                 {
-                                    SendResponse(writer, 530, "Not logged in");
+                                    SendResponse(writer, 530, "Não autenticado");
                                     break;
                                 }
                                 SendResponse(writer, 215, "UNIX Type: L8");
@@ -147,25 +147,25 @@ namespace Digital_World.Network
                             case "TYPE":
                                 if (!authenticated)
                                 {
-                                    SendResponse(writer, 530, "Not logged in");
+                                    SendResponse(writer, 530, "Não autenticado");
                                     break;
                                 }
-                                SendResponse(writer, 200, $"Type set to {argument}");
+                                SendResponse(writer, 200, $"Tipo definido como {argument}");
                                 break;
 
                             case "PWD":
                                 if (!authenticated)
                                 {
-                                    SendResponse(writer, 530, "Not logged in");
+                                    SendResponse(writer, 530, "Não autenticado");
                                     break;
                                 }
-                                SendResponse(writer, 257, "\"/\" is current directory");
+                                SendResponse(writer, 257, "\"/\" é o diretório atual");
                                 break;
 
                             case "PORT":
                                 if (!authenticated)
                                 {
-                                    SendResponse(writer, 530, "Not logged in");
+                                    SendResponse(writer, 530, "Não autenticado");
                                     break;
                                 }
                                 // Parse PORT command: h1,h2,h3,h4,p1,p2
@@ -174,18 +174,18 @@ namespace Digital_World.Network
                                 {
                                     string dataIp = $"{portParts[0]}.{portParts[1]}.{portParts[2]}.{portParts[3]}";
                                     dataPort = int.Parse(portParts[4]) * 256 + int.Parse(portParts[5]);
-                                    SendResponse(writer, 200, "PORT command successful");
+                                    SendResponse(writer, 200, "Comando PORT bem-sucedido");
                                 }
                                 else
                                 {
-                                    SendResponse(writer, 501, "Invalid PORT command");
+                                    SendResponse(writer, 501, "Comando PORT inválido");
                                 }
                                 break;
 
                             case "PASV":
                                 if (!authenticated)
                                 {
-                                    SendResponse(writer, 530, "Not logged in");
+                                    SendResponse(writer, 530, "Não autenticado");
                                     break;
                                 }
                                 // Modo passivo - criar listener temporário
@@ -199,7 +199,7 @@ namespace Digital_World.Network
                                 int p1 = pasvPort / 256;
                                 int p2 = pasvPort % 256;
                                 
-                                SendResponse(writer, 227, $"Entering Passive Mode ({ipParts[0]},{ipParts[1]},{ipParts[2]},{ipParts[3]},{p1},{p2})");
+                                SendResponse(writer, 227, $"Entrando em Modo Passivo ({ipParts[0]},{ipParts[1]},{ipParts[2]},{ipParts[3]},{p1},{p2})");
                                 
                                 // Aceitar conexão de dados em background
                                 Task.Run(async () =>
@@ -212,14 +212,14 @@ namespace Digital_World.Network
                             case "STOR":
                                 if (!authenticated)
                                 {
-                                    SendResponse(writer, 530, "Not logged in");
+                                    SendResponse(writer, 530, "Não autenticado");
                                     break;
                                 }
                                 // STOR - único comando permitido para upload
                                 string filename = argument;
                                 string filepath = Path.Combine(uploadPath, Path.GetFileName(filename));
 
-                                SendResponse(writer, 150, "Opening data connection");
+                                SendResponse(writer, 150, "Abrindo conexão de dados");
 
                                 try
                                 {
@@ -233,7 +233,7 @@ namespace Digital_World.Network
 
                                     if (dataClient == null)
                                     {
-                                        SendResponse(writer, 425, "Can't open data connection");
+                                        SendResponse(writer, 425, "Não foi possível abrir conexão de dados");
                                         break;
                                     }
 
@@ -246,17 +246,17 @@ namespace Digital_World.Network
                                     dataClient.Close();
                                     dataClient = null;
 
-                                    SendResponse(writer, 226, "Transfer complete");
+                                    SendResponse(writer, 226, "Transferência completa");
                                     Console.WriteLine($"[FTP] Arquivo recebido: {filename} ({new FileInfo(filepath).Length} bytes)");
                                 }
                                 catch (Exception ex)
                                 {
-                                    SendResponse(writer, 550, $"Upload failed: {ex.Message}");
+                                    SendResponse(writer, 550, $"Falha no upload: {ex.Message}");
                                     Console.WriteLine($"[FTP] Erro no upload: {ex.Message}");
                                 }
                                 break;
 
-                            // Comandos bloqueados (não permitidos em modo upload-only)
+                            // Comandos bloqueados (não permitidos em modo somente-envio)
                             case "LIST":
                             case "NLST":
                             case "RETR":
@@ -269,10 +269,10 @@ namespace Digital_World.Network
                             case "RNTO":
                                 if (!authenticated)
                                 {
-                                    SendResponse(writer, 530, "Not logged in");
+                                    SendResponse(writer, 530, "Não autenticado");
                                     break;
                                 }
-                                SendResponse(writer, 502, "Command not implemented (Upload Only Mode)");
+                                SendResponse(writer, 502, "Comando não implementado (Modo Somente Envio)");
                                 Console.WriteLine($"[FTP] {clientAddress} comando bloqueado: {command}");
                                 break;
 
@@ -281,12 +281,12 @@ namespace Digital_World.Network
                                 break;
 
                             case "QUIT":
-                                SendResponse(writer, 221, "Goodbye");
+                                SendResponse(writer, 221, "Até logo");
                                 Console.WriteLine($"[FTP] {clientAddress} desconectado");
                                 return;
 
                             default:
-                                SendResponse(writer, 500, "Unknown command");
+                                SendResponse(writer, 500, "Comando desconhecido");
                                 break;
                         }
                     }
