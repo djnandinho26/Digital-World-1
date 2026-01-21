@@ -38,7 +38,8 @@ namespace Digital_World
             server.OnRead += new SocketWrapper.dlgRead(m_auth_OnRead);
             server.OnClose += new SocketWrapper.dlgClose(server_OnClose);
 
-            Logger _writer = new Logger(tLog);
+            // Configurar logger com múltiplos TextBox
+            MultiLogger _writer = new MultiLogger(tLogAuth, tLogWeb);
 
             Opt = Settings.Deserialize("Settings.json");
             
