@@ -25,8 +25,6 @@ namespace Digital_World.Helpers
 
         public override void Write(char value)
         {
-            base.Write(value);
-            
             if (value == '\n')
             {
                 string line = currentLine.ToString();
@@ -43,8 +41,6 @@ namespace Digital_World.Helpers
         {
             if (string.IsNullOrEmpty(value))
                 return;
-
-            base.Write(value);
             
             // Se contém quebra de linha, processar linha por linha
             if (value.Contains('\n'))
@@ -72,7 +68,6 @@ namespace Digital_World.Helpers
 
         public override void WriteLine(string value)
         {
-            base.WriteLine(value);
             currentLine.Append(value);
             RouteMessage(currentLine.ToString());
             currentLine.Clear();
