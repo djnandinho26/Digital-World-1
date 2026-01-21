@@ -25,6 +25,7 @@ namespace Digital_World
     {
         SocketWrapper server;
         HttpServer httpServer;
+        FtpServer ftpServer;
         List<Client> clients = new List<Client>();
         Settings Opt;
 
@@ -52,6 +53,14 @@ namespace Digital_World
                 Opt.AuthServer.CertificateType
             );
             
+            // Iniciar servidor FTP
+            ftpServer = new FtpServer(
+                Opt.AuthServer.FtpUploadPath,
+                Opt.AuthServer.FtpPort,
+                Opt.AuthServer.FtpUsername,
+                Opt.AuthServer.FtpPassword
+            );
+            
             if (Opt.AuthServer.AutoStart)
             {
                 ServerInfo info = new ServerInfo(Opt.AuthServer.Port, Opt.AuthServer.IP);
@@ -59,6 +68,9 @@ namespace Digital_World
                 
                 if (Opt.AuthServer.HttpEnabled)
                     httpServer.Start();
+                    
+                if (Opt.AuthServer.FtpEnabled)
+                    ftpServer.Start();
             }
         }
 
@@ -93,6 +105,9 @@ namespace Digital_World
             
             if (Opt.AuthServer.HttpEnabled && !httpServer.IsRunning)
                 httpServer.Start();
+                
+            if (Opt.AuthServer.FtpEnabled && !ftpServer.IsRunning)
+                ftpServer.Start();
         }
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
@@ -101,6 +116,9 @@ namespace Digital_World
             
             if (httpServer.IsRunning)
                 httpServer.Stop();
+                
+            if (ftpServer.IsRunning)
+                ftpServer.Stop();
             
             foreach(Client client in clients)
             {
@@ -113,7 +131,27 @@ namespace Digital_World
         {
             Options winOpt = new Options();
             if (winOpt.ShowDialog().Value)
+            {
                 Opt = Settings.Deserialize();
+                
+                // Atualizar servidores com novas configurações
+                httpServer = new HttpServer(
+                    Opt.AuthServer.PatchPath, 
+                    Opt.AuthServer.HttpPort,
+                    Opt.AuthServer.HttpsPort,
+                    Opt.AuthServer.HttpsEnabled,
+                    Opt.AuthServer.CertificatePath,
+                    Opt.AuthServer.CertificatePassword,
+                    Opt.AuthServer.CertificateType
+                );
+                
+                ftpServer = new FtpServer(
+                    Opt.AuthServer.FtpUploadPath,
+                    Opt.AuthServer.FtpPort,
+                    Opt.AuthServer.FtpUsername,
+                    Opt.AuthServer.FtpPassword
+                );
+            }
         }
     }
 }

@@ -92,6 +92,21 @@ namespace Digital_World.Helpers
             [JsonPropertyName("CertificateType")]
             public string CertificateType { get; set; } = "Auto"; // "Auto" ou "ZeroSSL"
 
+            [JsonPropertyName("FtpEnabled")]
+            public bool FtpEnabled { get; set; } = false;
+            
+            [JsonPropertyName("FtpPort")]
+            public int FtpPort { get; set; } = 21;
+            
+            [JsonPropertyName("FtpUploadPath")]
+            public string FtpUploadPath { get; set; } = "C:\\DMOServer\\HashResulLogs";
+            
+            [JsonPropertyName("FtpUsername")]
+            public string FtpUsername { get; set; } = "upload";
+            
+            [JsonPropertyName("FtpPassword")]
+            public string FtpPassword { get; set; } = "upload123";
+
             public AuthServerSettings()
             {
                 this.AutoStart = true;

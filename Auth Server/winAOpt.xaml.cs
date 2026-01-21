@@ -46,6 +46,13 @@ namespace Digital_World
             
             // Carregar tipo de certificado
             cbCertType.SelectedIndex = (mySettings.AuthServer.CertificateType == "ZeroSSL") ? 1 : 0;
+            
+            // Carregar configurações FTP
+            chkFtpEnabled.IsChecked = new bool?(mySettings.AuthServer.FtpEnabled);
+            tFtpPort.Text = mySettings.AuthServer.FtpPort.ToString();
+            tFtpUploadPath.Text = mySettings.AuthServer.FtpUploadPath;
+            tFtpUsername.Text = mySettings.AuthServer.FtpUsername;
+            tFtpPassword.Password = mySettings.AuthServer.FtpPassword;
         }
 
         private void btnOK_Click(object sender, RoutedEventArgs e)
@@ -90,6 +97,21 @@ namespace Digital_World
             catch (FormatException)
             {
                 mySettings.AuthServer.HttpsPort = 8443;
+            }
+            
+            // Salvar configurações FTP
+            mySettings.AuthServer.FtpEnabled = chkFtpEnabled.IsChecked.Value;
+            mySettings.AuthServer.FtpUploadPath = tFtpUploadPath.Text;
+            mySettings.AuthServer.FtpUsername = tFtpUsername.Text;
+            mySettings.AuthServer.FtpPassword = tFtpPassword.Password;
+            
+            try
+            {
+                mySettings.AuthServer.FtpPort = int.Parse(tFtpPort.Text);
+            }
+            catch (FormatException)
+            {
+                mySettings.AuthServer.FtpPort = 21;
             }
             
             mySettings.Serialize("Settings.json");
