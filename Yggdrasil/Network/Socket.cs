@@ -15,6 +15,7 @@ namespace Digital_World.Network
         private ManualResetEvent allDone = new ManualResetEvent(false);
         private Thread tWorker;
         private Socket listener;
+        private volatile bool isRunning = false;
 
         public SocketWrapper()
         {
@@ -42,10 +43,19 @@ namespace Digital_World.Network
     
         public void Stop()
         {
-            if (tWorker != null)
+            isRunning = false;
+            
+            if (listener != null)
             {
-                tWorker.Abort();
+                try
+                {
+                    listener.Close();
+                    listener.Dispose();
+                }
+                catch { }
             }
+            
+            allDone.Set();
         }
 
         public delegate void dlgAccept(Client client);
@@ -93,8 +103,9 @@ namespace Digital_World.Network
                 listener.Listen(100);
 
                 Console.WriteLine("Listening...");
+                isRunning = true;
 
-                while (true)
+                while (isRunning)
                 {
                     allDone.Reset();
 
@@ -105,7 +116,14 @@ namespace Digital_World.Network
             }
             catch (ThreadAbortException)
             {
-                listener.Close();
+                Console.WriteLine("Shutting down server...");
+            }
+            catch (SocketException)
+            {
+                Console.WriteLine("Shutting down server...");
+            }
+            catch (ObjectDisposedException)
+            {
                 Console.WriteLine("Shutting down server...");
             }
             catch (Exception e)

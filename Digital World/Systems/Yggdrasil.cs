@@ -15,6 +15,7 @@ namespace Digital_World.Systems
         private SocketWrapper server = null;
         private Thread tMain = null;
         private Settings Opt = null;
+        private volatile bool isRunning = false;
 
 
         public ObservableCollection<Client> Clients = new ObservableCollection<Client>();
@@ -66,7 +67,8 @@ namespace Digital_World.Systems
 
         public void Stop()
         {
-            tMain.Abort();
+            isRunning = false;
+            server.Stop();
         }
 
         private void Observe(object o)
@@ -79,17 +81,19 @@ namespace Digital_World.Systems
                 //Starts monitoring the client list
                 ThreadPool.QueueUserWorkItem(new WaitCallback(Monitor));
 
-                while (true)
+                isRunning = true;
+                while (isRunning)
                 {
+                    Thread.Sleep(100);
                 }
-            }
-            catch (ThreadAbortException)
-            {
-                server.Stop();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
+            }
+            finally
+            {
+                server.Stop();
             }
         }
 
