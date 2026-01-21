@@ -16,6 +16,8 @@ namespace Digital_World.Network
         private Thread tWorker;
         private Socket listener;
         private volatile bool isRunning = false;
+        private volatile bool isDisposed = false;
+        private readonly object syncLock = new object();
 
         public SocketWrapper()
         {
@@ -23,39 +25,90 @@ namespace Digital_World.Network
 
         public void Listen(int Port)
         {
-            tWorker = new Thread(new ParameterizedThreadStart(Start));
-            tWorker.IsBackground = true;
-            tWorker.Start(Port);
+            ThrowIfDisposed();
+            
+            lock (syncLock)
+            {
+                if (isRunning)
+                {
+                    Console.WriteLine("[AVISO] Servidor já está em execução.");
+                    return;
+                }
+                
+                ListenPort = Port;
+                tWorker = new Thread(new ParameterizedThreadStart(Start));
+                tWorker.IsBackground = true;
+                tWorker.Name = $"SocketListener-{Port}";
+                tWorker.Start(Port);
+            }
         }
 
         public void Listen(ServerInfo info)
         {
-            if (tWorker != null)
+            ThrowIfDisposed();
+            
+            if (info == null)
+                throw new ArgumentNullException(nameof(info));
+            
+            lock (syncLock)
             {
-                if (tWorker.ThreadState != ThreadState.Aborted)
+                if (isRunning)
+                {
+                    Console.WriteLine("[AVISO] Servidor já está em execução.");
                     return;
+                }
+                
+                ListenPort = info.Port;
+                tWorker = new Thread(new ParameterizedThreadStart(Start));
+                tWorker.IsBackground = true;
+                tWorker.Name = $"SocketListener-{info.Port}";
+                tWorker.Start(info);
             }
-            tWorker = new Thread(new ParameterizedThreadStart(Start));
-            tWorker.IsBackground = true;
-            tWorker.Start(info);
-
         }
     
         public void Stop()
         {
-            isRunning = false;
-            
-            if (listener != null)
+            if (!isRunning)
             {
-                try
-                {
-                    listener.Close();
-                    listener.Dispose();
-                }
-                catch { }
+                Console.WriteLine("[AVISO] Servidor já está parado.");
+                return;
             }
             
-            allDone.Set();
+            lock (syncLock)
+            {
+                isRunning = false;
+                
+                Console.WriteLine("[INFO] Parando servidor de socket...");
+                
+                if (listener != null)
+                {
+                    try
+                    {
+                        if (listener.Connected)
+                            listener.Shutdown(SocketShutdown.Both);
+                    }
+                    catch { }
+                    
+                    try
+                    {
+                        listener.Close();
+                        listener.Dispose();
+                        listener = null;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[ERRO] Ao fechar listener: {ex.Message}");
+                    }
+                }
+                
+                try
+                {
+                    allDone.Set();
+                }
+                catch { }
+                
+                Console.WriteLine("[INFO] Servidor de socket parado.");
+            }
         }
 
         public delegate void dlgAccept(Client client);
@@ -101,8 +154,9 @@ namespace Digital_World.Network
             {
                 listener.Bind(localEP);
                 listener.Listen(100);
+                listener.NoDelay = true; // Desabilitar algoritmo Nagle para menor latência
 
-                Console.WriteLine("Listening...");
+                Console.WriteLine($"[INFO] Servidor escutando em {ipAddress}:{Port}");
                 isRunning = true;
 
                 while (isRunning)
@@ -116,19 +170,24 @@ namespace Digital_World.Network
             }
             catch (ThreadAbortException)
             {
-                Console.WriteLine("Shutting down server...");
+                Console.WriteLine("[INFO] Thread do servidor abortada.");
             }
-            catch (SocketException)
+            catch (SocketException ex)
             {
-                Console.WriteLine("Shutting down server...");
+                Console.WriteLine($"[INFO] Socket exception durante shutdown: {ex.Message}");
             }
             catch (ObjectDisposedException)
             {
-                Console.WriteLine("Shutting down server...");
+                Console.WriteLine("[INFO] Socket disposed durante shutdown.");
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error: " + e.ToString());
+                Console.WriteLine($"[ERRO] Erro crítico no servidor de socket:\n{e}");
+            }
+            finally
+            {
+                isRunning = false;
+                Console.WriteLine($"[INFO] Thread do servidor finalizada (Porta: {Port}).");
             }
         }
 
@@ -139,9 +198,14 @@ namespace Digital_World.Network
                 allDone.Set();
 
                 Socket listener = (Socket)ar.AsyncState;
-                Socket handler = listener.EndAccept(ar);    //DMO Client
+                Socket handler = listener.EndAccept(ar);
 
-                Console.WriteLine("Accepting a client: {0}", handler.RemoteEndPoint);
+                // Configurar socket do cliente para melhor performance
+                handler.NoDelay = true;
+                handler.SendBufferSize = 8192;
+                handler.ReceiveBufferSize = 8192;
+
+                Console.WriteLine("[INFO] Cliente conectado: {0}", handler.RemoteEndPoint);
 
                 Client state = new Client();
                 state.m_socket = handler;
@@ -163,11 +227,11 @@ namespace Digital_World.Network
             }
             catch (SocketException ex)
             {
-                Console.WriteLine("Socket error in AcceptCallback: {0}", ex.Message);
+                Console.WriteLine($"[ERRO] Socket error em AcceptCallback: {ex.Message} (Código: {ex.ErrorCode})");
             }
             catch (Exception e)
             {
-                Console.WriteLine("ERROR: AcceptCallback\n{0}", e);
+                Console.WriteLine($"[ERRO] Exceção inesperada em AcceptCallback:\n{e}");
             }
         }
 
@@ -271,7 +335,26 @@ namespace Digital_World.Network
 
         public void Send(Socket handler, byte[] buffer)
         {
-            handler.BeginSend(buffer, 0, buffer.Length, 0, new AsyncCallback(SendCallback), handler);
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+            
+            if (buffer == null || buffer.Length == 0)
+                throw new ArgumentException("Buffer não pode ser nulo ou vazio.", nameof(buffer));
+            
+            if (!handler.Connected)
+            {
+                Console.WriteLine("[AVISO] Tentativa de enviar dados para socket desconectado.");
+                return;
+            }
+            
+            try
+            {
+                handler.BeginSend(buffer, 0, buffer.Length, 0, new AsyncCallback(SendCallback), handler);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERRO] Falha ao iniciar envio: {ex.Message}");
+            }
         }
 
         private void SendCallback(IAsyncResult ar)
@@ -279,12 +362,20 @@ namespace Digital_World.Network
             try
             {
                 Socket handler = (Socket)ar.AsyncState;
-
                 int bytesSent = handler.EndSend(ar);
+                // Logging opcional: Console.WriteLine($"[DEBUG] {bytesSent} bytes enviados.");
+            }
+            catch (SocketException ex)
+            {
+                Console.WriteLine($"[ERRO] Erro de socket ao enviar dados: {ex.Message} (Código: {ex.ErrorCode})");
+            }
+            catch (ObjectDisposedException)
+            {
+                // Socket foi fechado - normal durante shutdown
             }
             catch (Exception e)
             {
-                Console.WriteLine("Error: " + e.ToString());
+                Console.WriteLine($"[ERRO] Exceção ao enviar dados:\n{e}");
             }
         }
 
@@ -292,11 +383,12 @@ namespace Digital_World.Network
         {
             try
             {
-                Console.WriteLine("A connection has closed.");
+                Console.WriteLine("[INFO] Uma conexão foi fechada.");
                 OnClose.EndInvoke(ar);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERRO] Exceção ao finalizar fechamento: {ex.Message}");
             }
         }
 
@@ -305,24 +397,87 @@ namespace Digital_World.Network
         {
             get
             {
-                try
-                {
-                    if (tWorker.ThreadState == ThreadState.Running)
-                        return true;
-                    return false;
-                }
-                catch
-                {
-                    return false;
-                }
+                return isRunning && !isDisposed;
             }
+        }
+        
+        private void ThrowIfDisposed()
+        {
+            if (isDisposed)
+                throw new ObjectDisposedException(nameof(SocketWrapper));
         }
 
         public void Dispose()
         {
-            try { listener.Close(); }
-            catch { }
-            allDone.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed)
+                return;
+            
+            if (disposing)
+            {
+                // Parar servidor se estiver rodando
+                if (isRunning)
+                {
+                    try
+                    {
+                        Stop();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"[ERRO] Exceção ao parar servidor durante Dispose: {ex.Message}");
+                    }
+                }
+                
+                // Limpar recursos gerenciados
+                if (listener != null)
+                {
+                    try
+                    {
+                        listener.Close();
+                        listener.Dispose();
+                    }
+                    catch { }
+                    finally
+                    {
+                        listener = null;
+                    }
+                }
+                
+                if (allDone != null)
+                {
+                    try
+                    {
+                        allDone.Dispose();
+                    }
+                    catch { }
+                }
+                
+                // Aguardar thread terminar
+                if (tWorker != null && tWorker.IsAlive)
+                {
+                    try
+                    {
+                        if (!tWorker.Join(TimeSpan.FromSeconds(5)))
+                        {
+                            Console.WriteLine("[AVISO] Thread do servidor não finalizou em 5 segundos.");
+                        }
+                    }
+                    catch { }
+                }
+            }
+            
+            isDisposed = true;
+            Console.WriteLine("[INFO] SocketWrapper disposed.");
+        }
+        
+        ~SocketWrapper()
+        {
+            Dispose(false);
         }
     }
 }
