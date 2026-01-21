@@ -131,7 +131,6 @@ namespace Digital_World.Network
             int Port = 0;
             if (state.GetType() == typeof(ServerInfo))
             {
-                Console.WriteLine("ServerInfo found...");
                 ServerInfo info = (ServerInfo)state;
                 Port = info.Port;
                 ipAddress = info.Host;
