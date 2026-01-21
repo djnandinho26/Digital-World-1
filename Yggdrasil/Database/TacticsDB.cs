@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.IO;
 using Digital_World.Helpers;
+using System.IO;
 
 namespace Digital_World.Database
 {
@@ -35,7 +35,7 @@ namespace Digital_World.Database
                     //More data at the end. Digimon names and descriptions.
                 }
             }
-            Console.WriteLine("[TacticsDB] Loaded {0} entries.", Tactics.Count);
+            MultiLogger.LogServer("[TacticsDB] Loaded {0} entries.", Tactics.Count);
         }
 
         public static TDBTactic Get(int ItemId)
@@ -69,3 +69,4 @@ namespace Digital_World.Database
         public int uInt2, uInt3, uInt4;
     }
 }
+

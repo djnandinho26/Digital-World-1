@@ -31,7 +31,7 @@ namespace Digital_World
             InitializeComponent();
 
 
-            Logger lLog = new Logger(tLog);
+            MultiLogger _writer = new MultiLogger(tLog, tLog);
             Yggdrasil = new Yggdrasil();
         }
 

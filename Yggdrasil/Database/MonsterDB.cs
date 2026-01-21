@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -73,7 +73,7 @@ namespace Digital_World.Database
                     }
                 }
             }
-            Console.WriteLine("[MonsterDB] Loaded {0} NPCs, {1} Digimon, {2} Maps.", NPCs.Count, Digimon.Count, Maps.Count);
+            MultiLogger.LogServer("[MonsterDB] Loaded {0} NPCs, {1} Digimon, {2} Maps.", NPCs.Count, Digimon.Count, Maps.Count);
         }
 
         public static MDBDigimon GetDigimon(uint Id)
@@ -157,3 +157,4 @@ namespace Digital_World.Database
         public int[] uInts;
     }
 }
+

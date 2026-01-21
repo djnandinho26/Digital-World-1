@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Digital_World.Helpers;
@@ -36,7 +36,7 @@ namespace Digital_World.Database
                     }
                 }
             }
-            Console.WriteLine("[MapDB] Loaded {0} maps.", MapList.Count);
+            MultiLogger.LogServer("[MapDB] Loaded {0} maps.", MapList.Count);
         }
 
         public static MapData GetMap(int mapId)
@@ -61,3 +61,4 @@ namespace Digital_World.Database
         }
     }
 }
+

@@ -16,7 +16,7 @@ namespace Digital_World
             {
                 case -1:
                     {
-                        Console.WriteLine("Accepted connection: {0}", client.m_socket.RemoteEndPoint);
+                        MultiLogger.LogServer("Accepted connection: {0}", client.m_socket.RemoteEndPoint);
                         client.Send(new Packets.PacketFFEF((short)(client.handshake ^ 0x7e41)));
                         break;
                     }
@@ -63,7 +63,7 @@ namespace Digital_World
                         int digiModel = packet.ReadInt();
                         string digiName = packet.ReadZString();
 
-                        Console.WriteLine("CreateChar {0} {1}", (CharacterModel)model, name);
+                        MultiLogger.LogServer("CreateChar {0} {1}", (CharacterModel)model, name);
 
                         int charId = SqlDB.CreateCharacter(client.AccountID, position, model, name, digiModel);
                         int digiId = (int)SqlDB.CreateDigimon((uint)charId, digiName, digiModel);
@@ -101,15 +101,15 @@ namespace Digital_World
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine(e);
+                            MultiLogger.LogServer("Error getting tamer position: {0}", e.Message);
                         }
                         client.Send(new Packets.Lobby.ServerIP(Opt.GameServer.IP.ToString(), Opt.GameServer.Port,
                             pLoc.Map, pLoc.MapName));
                         break;
                     }
                 default:
-                    Console.WriteLine("Unknown Packet Type: {0}", packet.Type);
-                    Console.WriteLine(packet.ToString());
+                    MultiLogger.LogServer("Unknown Packet Type: {0}", packet.Type);
+                    MultiLogger.LogServer(packet.ToString());
                     break;
             }
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,7 +44,7 @@ namespace Digital_World.Database
                     }
                 }
             }
-            Console.WriteLine("[PortalDB] Loaded {0} portals", PortalList.Count);
+            MultiLogger.LogServer("[PortalDB] Loaded {0} portals", PortalList.Count);
         }
 
         public static Portal GetPortal(int portalId)
@@ -95,3 +95,4 @@ namespace Digital_World.Database
         }
     }
 }
+

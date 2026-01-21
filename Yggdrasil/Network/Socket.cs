@@ -1,10 +1,11 @@
-Ôªøusing System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
 using System.Threading;
 using System.Net;
+using Digital_World.Helpers;
 
 namespace Digital_World.Network
 {
@@ -31,7 +32,7 @@ namespace Digital_World.Network
             {
                 if (isRunning)
                 {
-                    Console.WriteLine("[AVISO] Servidor j√° est√° em execu√ß√£o.");
+                    MultiLogger.LogServer("[AVISO] Servidor j· est· em execuÁ„o.");
                     return;
                 }
                 
@@ -54,7 +55,7 @@ namespace Digital_World.Network
             {
                 if (isRunning)
                 {
-                    Console.WriteLine("[AVISO] Servidor j√° est√° em execu√ß√£o.");
+                    MultiLogger.LogServer("[AVISO] Servidor j· est· em execuÁ„o.");
                     return;
                 }
                 
@@ -70,7 +71,7 @@ namespace Digital_World.Network
         {
             if (!isRunning)
             {
-                Console.WriteLine("[AVISO] Servidor j√° est√° parado.");
+                MultiLogger.LogServer("[AVISO] Servidor j· est· parado.");
                 return;
             }
             
@@ -78,7 +79,7 @@ namespace Digital_World.Network
             {
                 isRunning = false;
                 
-                Console.WriteLine("[INFO] Parando servidor de socket...");
+                MultiLogger.LogServer("[INFO] Parando servidor de socket...");
                 
                 if (listener != null)
                 {
@@ -97,7 +98,7 @@ namespace Digital_World.Network
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[ERRO] Ao fechar listener: {ex.Message}");
+                        MultiLogger.LogServer($"[ERRO] Ao fechar listener: {ex.Message}");
                     }
                 }
                 
@@ -107,7 +108,7 @@ namespace Digital_World.Network
                 }
                 catch { }
                 
-                Console.WriteLine("[INFO] Servidor de socket parado.");
+                MultiLogger.LogServer("[INFO] Servidor de socket parado.");
             }
         }
 
@@ -131,6 +132,7 @@ namespace Digital_World.Network
             int Port = 0;
             if (state.GetType() == typeof(ServerInfo))
             {
+                MultiLogger.LogServer("[INFO] ServerInfo encontrado...");
                 ServerInfo info = (ServerInfo)state;
                 Port = info.Port;
                 ipAddress = info.Host;
@@ -153,9 +155,9 @@ namespace Digital_World.Network
             {
                 listener.Bind(localEP);
                 listener.Listen(100);
-                listener.NoDelay = true; // Desabilitar algoritmo Nagle para menor lat√™ncia
+                listener.NoDelay = true; // Desabilitar algoritmo Nagle para menor latÍncia
 
-                Console.WriteLine($"[INFO] Servidor escutando em {ipAddress}:{Port}");
+                MultiLogger.LogServer($"[INFO] Servidor escutando em {ipAddress}:{Port}");
                 isRunning = true;
 
                 while (isRunning)
@@ -169,24 +171,24 @@ namespace Digital_World.Network
             }
             catch (ThreadAbortException)
             {
-                Console.WriteLine("[INFO] Thread do servidor abortada.");
+                MultiLogger.LogServer("[INFO] Thread do servidor abortada.");
             }
             catch (SocketException ex)
             {
-                Console.WriteLine($"[INFO] Socket exception durante shutdown: {ex.Message}");
+                MultiLogger.LogServer($"[INFO] Socket exception durante shutdown: {ex.Message}");
             }
             catch (ObjectDisposedException)
             {
-                Console.WriteLine("[INFO] Socket disposed durante shutdown.");
+                MultiLogger.LogServer("[INFO] Socket disposed durante shutdown.");
             }
             catch (Exception e)
             {
-                Console.WriteLine($"[ERRO] Erro cr√≠tico no servidor de socket:\n{e}");
+                MultiLogger.LogServer($"[ERRO] Erro crÌtico no servidor de socket:\n{e}");
             }
             finally
             {
                 isRunning = false;
-                Console.WriteLine($"[INFO] Thread do servidor finalizada (Porta: {Port}).");
+                MultiLogger.LogServer($"[INFO] Thread do servidor finalizada (Porta: {Port}).");
             }
         }
 
@@ -204,7 +206,7 @@ namespace Digital_World.Network
                 handler.SendBufferSize = 8192;
                 handler.ReceiveBufferSize = 8192;
 
-                Console.WriteLine("[INFO] Cliente conectado: {0}", handler.RemoteEndPoint);
+                MultiLogger.LogServer("[INFO] Cliente conectado: {0}", handler.RemoteEndPoint);
 
                 Client state = new Client();
                 state.m_socket = handler;
@@ -226,11 +228,11 @@ namespace Digital_World.Network
             }
             catch (SocketException ex)
             {
-                Console.WriteLine($"[ERRO] Socket error em AcceptCallback: {ex.Message} (C√≥digo: {ex.ErrorCode})");
+                MultiLogger.LogServer($"[ERRO] Socket error em AcceptCallback: {ex.Message} (CÛdigo: {ex.ErrorCode})");
             }
             catch (Exception e)
             {
-                Console.WriteLine($"[ERRO] Exce√ß√£o inesperada em AcceptCallback:\n{e}");
+                MultiLogger.LogServer($"[ERRO] ExceÁ„o inesperada em AcceptCallback:\n{e}");
             }
         }
 
@@ -338,11 +340,11 @@ namespace Digital_World.Network
                 throw new ArgumentNullException(nameof(handler));
             
             if (buffer == null || buffer.Length == 0)
-                throw new ArgumentException("Buffer n√£o pode ser nulo ou vazio.", nameof(buffer));
+                throw new ArgumentException("Buffer n„o pode ser nulo ou vazio.", nameof(buffer));
             
             if (!handler.Connected)
             {
-                Console.WriteLine("[AVISO] Tentativa de enviar dados para socket desconectado.");
+                MultiLogger.LogServer("[AVISO] Tentativa de enviar dados para socket desconectado.");
                 return;
             }
             
@@ -352,7 +354,7 @@ namespace Digital_World.Network
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERRO] Falha ao iniciar envio: {ex.Message}");
+                MultiLogger.LogServer($"[ERRO] Falha ao iniciar envio: {ex.Message}");
             }
         }
 
@@ -362,11 +364,11 @@ namespace Digital_World.Network
             {
                 Socket handler = (Socket)ar.AsyncState;
                 int bytesSent = handler.EndSend(ar);
-                // Logging opcional: Console.WriteLine($"[DEBUG] {bytesSent} bytes enviados.");
+                // Logging opcional: MultiLogger.LogServer($"[DEBUG] {bytesSent} bytes enviados.");
             }
             catch (SocketException ex)
             {
-                Console.WriteLine($"[ERRO] Erro de socket ao enviar dados: {ex.Message} (C√≥digo: {ex.ErrorCode})");
+                MultiLogger.LogServer($"[ERRO] Erro de socket ao enviar dados: {ex.Message} (CÛdigo: {ex.ErrorCode})");
             }
             catch (ObjectDisposedException)
             {
@@ -374,7 +376,7 @@ namespace Digital_World.Network
             }
             catch (Exception e)
             {
-                Console.WriteLine($"[ERRO] Exce√ß√£o ao enviar dados:\n{e}");
+                MultiLogger.LogServer($"[ERRO] ExceÁ„o ao enviar dados:\n{e}");
             }
         }
 
@@ -382,12 +384,12 @@ namespace Digital_World.Network
         {
             try
             {
-                Console.WriteLine("[INFO] Uma conex√£o foi fechada.");
+                MultiLogger.LogServer("[INFO] Uma conex„o foi fechada.");
                 OnClose.EndInvoke(ar);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[ERRO] Exce√ß√£o ao finalizar fechamento: {ex.Message}");
+                MultiLogger.LogServer($"[ERRO] ExceÁ„o ao finalizar fechamento: {ex.Message}");
             }
         }
 
@@ -428,7 +430,7 @@ namespace Digital_World.Network
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[ERRO] Exce√ß√£o ao parar servidor durante Dispose: {ex.Message}");
+                        MultiLogger.LogServer($"[ERRO] ExceÁ„o ao parar servidor durante Dispose: {ex.Message}");
                     }
                 }
                 
@@ -463,7 +465,7 @@ namespace Digital_World.Network
                     {
                         if (!tWorker.Join(TimeSpan.FromSeconds(5)))
                         {
-                            Console.WriteLine("[AVISO] Thread do servidor n√£o finalizou em 5 segundos.");
+                            MultiLogger.LogServer("[AVISO] Thread do servidor n„o finalizou em 5 segundos.");
                         }
                     }
                     catch { }
@@ -471,7 +473,7 @@ namespace Digital_World.Network
             }
             
             isDisposed = true;
-            Console.WriteLine("[INFO] SocketWrapper disposed.");
+            MultiLogger.LogServer("[INFO] SocketWrapper disposed.");
         }
         
         ~SocketWrapper()
@@ -480,3 +482,4 @@ namespace Digital_World.Network
         }
     }
 }
+

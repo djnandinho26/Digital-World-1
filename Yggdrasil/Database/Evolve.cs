@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Digital_World.Helpers;
@@ -79,7 +79,7 @@ namespace Digital_World.Database
                     }
                 }
             }
-            Console.WriteLine("[EvolutionDB] Loaded {0} Digimon evolutions",EvolutionList.Count);
+            MultiLogger.LogServer("[EvolutionDB] Loaded {0} Digimon evolutions",EvolutionList.Count);
         }
 
         public static EvolutionLine GetLine(int digiType, int evolvedType)
@@ -133,3 +133,4 @@ namespace Digital_World.Database
         public int[] uInts3 = new int[28];
     }
 }
+

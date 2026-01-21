@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Digital_World.Helpers;
 
 namespace Digital_World.Network
 {
@@ -14,7 +15,7 @@ namespace Digital_World.Network
     /// </summary>
     public class FtpServer
     {
-        private TcpListener listener;
+        private TcpListener? listener;
         private bool isRunning;
         private string uploadPath;
         private int port;
@@ -38,7 +39,7 @@ namespace Digital_World.Network
             if (!Directory.Exists(uploadPath))
             {
                 Directory.CreateDirectory(uploadPath);
-                Console.WriteLine($"[FTP] Pasta criada: {uploadPath}");
+                MultiLogger.LogWeb($"[FTP] Pasta criada: {uploadPath}");
             }
 
             try
@@ -46,17 +47,17 @@ namespace Digital_World.Network
                 listener = new TcpListener(IPAddress.Any, port);
                 listener.Start();
                 isRunning = true;
-                Console.WriteLine($"[FTP] Servidor iniciado na porta {port}");
-                Console.WriteLine($"[FTP] Modo: SOMENTE ENVIO (Upload Only)");
-                Console.WriteLine($"[FTP] Pasta de destino: {uploadPath}");
-                Console.WriteLine($"[FTP] Usuário: {username}");
+                MultiLogger.LogWeb($"[FTP] Servidor iniciado na porta {port}");
+                MultiLogger.LogWeb($"[FTP] Modo: SOMENTE ENVIO (Upload Only)");
+                MultiLogger.LogWeb($"[FTP] Pasta de destino: {uploadPath}");
+                MultiLogger.LogWeb($"[FTP] Usuário: {username}");
 
                 Task.Run(() => Listen());
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[FTP] Erro ao iniciar servidor: {ex.Message}");
-                Console.WriteLine($"[FTP] Execute como Administrador ou use outra porta");
+                MultiLogger.LogWeb($"[FTP] Erro ao iniciar servidor: {ex.Message}");
+                MultiLogger.LogWeb($"[FTP] Execute como Administrador ou use outra porta");
             }
         }
 
@@ -66,7 +67,7 @@ namespace Digital_World.Network
 
             isRunning = false;
             listener?.Stop();
-            Console.WriteLine("[FTP] Servidor parado");
+            MultiLogger.LogWeb("[FTP] Servidor parado");
         }
 
         private async void Listen()
@@ -81,15 +82,15 @@ namespace Digital_World.Network
                 catch (Exception ex)
                 {
                     if (isRunning)
-                        Console.WriteLine($"[FTP] Erro ao aceitar conexão: {ex.Message}");
+                        MultiLogger.LogWeb($"[FTP] Erro ao aceitar conexão: {ex.Message}");
                 }
             }
         }
 
         private void HandleClient(TcpClient controlClient)
         {
-            string clientAddress = ((IPEndPoint)controlClient.Client.RemoteEndPoint).Address.ToString();
-            Console.WriteLine($"[FTP] Cliente conectado: {clientAddress}");
+            string clientAddress = ((IPEndPoint)controlClient.Client.RemoteEndPoint!).Address.ToString();
+            MultiLogger.LogWeb($"[FTP] Cliente conectado: {clientAddress}");
 
             try
             {
@@ -102,17 +103,17 @@ namespace Digital_World.Network
 
                     bool authenticated = false;
                     string currentUser = "";
-                    TcpClient dataClient = null;
+                    TcpClient? dataClient = null;
                     int dataPort = 0;
 
-                    string line;
+                    string? line;
                     while ((line = reader.ReadLine()) != null)
                     {
                         string[] parts = line.Split(' ', 2);
                         string command = parts[0].ToUpper();
                         string argument = parts.Length > 1 ? parts[1] : "";
 
-                        Console.WriteLine($"[FTP] {clientAddress} > {command} {argument}");
+                        MultiLogger.LogWeb($"[FTP] {clientAddress} > {command} {argument}");
 
                         switch (command)
                         {
@@ -126,12 +127,12 @@ namespace Digital_World.Network
                                 {
                                     authenticated = true;
                                     SendResponse(writer, 230, "Usuário autenticado (Modo Somente Envio)");
-                                    Console.WriteLine($"[FTP] {clientAddress} autenticado como {currentUser}");
+                                    MultiLogger.LogWeb($"[FTP] {clientAddress} autenticado como {currentUser}");
                                 }
                                 else
                                 {
                                     SendResponse(writer, 530, "Login incorreto");
-                                    Console.WriteLine($"[FTP] {clientAddress} falha na autenticação");
+                                    MultiLogger.LogWeb($"[FTP] {clientAddress} falha na autenticação");
                                 }
                                 break;
 
@@ -247,12 +248,12 @@ namespace Digital_World.Network
                                     dataClient = null;
 
                                     SendResponse(writer, 226, "Transferência completa");
-                                    Console.WriteLine($"[FTP] Arquivo recebido: {filename} ({new FileInfo(filepath).Length} bytes)");
+                                    MultiLogger.LogWeb($"[FTP] Arquivo recebido: {filename} ({new FileInfo(filepath).Length} bytes)");
                                 }
                                 catch (Exception ex)
                                 {
                                     SendResponse(writer, 550, $"Falha no upload: {ex.Message}");
-                                    Console.WriteLine($"[FTP] Erro no upload: {ex.Message}");
+                                    MultiLogger.LogWeb($"[FTP] Erro no upload: {ex.Message}");
                                 }
                                 break;
 
@@ -273,7 +274,7 @@ namespace Digital_World.Network
                                     break;
                                 }
                                 SendResponse(writer, 502, "Comando não implementado (Modo Somente Envio)");
-                                Console.WriteLine($"[FTP] {clientAddress} comando bloqueado: {command}");
+                                MultiLogger.LogWeb($"[FTP] {clientAddress} comando bloqueado: {command}");
                                 break;
 
                             case "NOOP":
@@ -282,7 +283,7 @@ namespace Digital_World.Network
 
                             case "QUIT":
                                 SendResponse(writer, 221, "Até logo");
-                                Console.WriteLine($"[FTP] {clientAddress} desconectado");
+                                MultiLogger.LogWeb($"[FTP] {clientAddress} desconectado");
                                 return;
 
                             default:
@@ -294,7 +295,7 @@ namespace Digital_World.Network
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[FTP] Erro na conexão com {clientAddress}: {ex.Message}");
+                MultiLogger.LogWeb($"[FTP] Erro na conexão com {clientAddress}: {ex.Message}");
             }
             finally
             {

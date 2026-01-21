@@ -12,6 +12,7 @@ namespace Digital_World.Helpers
     /// </summary>
     public class MultiLogger : TextWriter
     {
+        private static MultiLogger? instance;
         private TextBox authOutput;
         private TextBox webOutput;
         private StringBuilder currentLine = new StringBuilder();
@@ -20,7 +21,26 @@ namespace Digital_World.Helpers
         {
             authOutput = authTextBox;
             webOutput = webTextBox;
+            instance = this;
             Console.SetOut(this);
+        }
+
+        /// <summary>
+        /// Registra mensagens de logs dos servidores (Auth, Lobby, Game) - sempre vai para o painel esquerdo
+        /// </summary>
+        public static void LogServer(string format, params object[] args)
+        {
+            string message = args.Length > 0 ? string.Format(format, args) : format;
+            instance?.WriteToAuth(message);
+        }
+
+        /// <summary>
+        /// Registra mensagens de HTTP/HTTPS/FTP (sempre vai para o painel direito)
+        /// </summary>
+        public static void LogWeb(string format, params object[] args)
+        {
+            string message = args.Length > 0 ? string.Format(format, args) : format;
+            instance?.WriteToWeb(message);
         }
 
         public override void Write(char value)
@@ -107,21 +127,26 @@ namespace Digital_World.Helpers
 
         private bool IsWebServerMessage(string message)
         {
-            // Identificar mensagens do servidor HTTP/HTTPS/FTP
+            string upperMessage = message.ToUpper();
+            
+            // Prioridade 1: Prefixos específicos (maior prioridade)
+            if (upperMessage.Contains("[HTTP]") || 
+                upperMessage.Contains("[HTTPS]") || 
+                upperMessage.Contains("[FTP]"))
+            {
+                return true;
+            }
+            
+            // Prioridade 2: Palavras-chave específicas de web/ftp
             string[] webKeywords = new string[]
             {
-                "HTTP",
-                "HTTPS",
-                "FTP",
                 "SSL",
                 "TLS",
-                "Certificate",
-                "Certificado",
-                "[WEB]",
-                "[FTP]",
-                "patch",
-                "download",
-                "upload",
+                "CERTIFICATE",
+                "CERTIFICADO",
+                "THUMBPRINT",
+                "BINDING",
+                "PFX",
                 "GET ",
                 "POST ",
                 "PUT ",
@@ -130,30 +155,48 @@ namespace Digital_World.Helpers
                 "OPTIONS ",
                 "RETR",
                 "STOR",
-                "LIST",
-                "USER",
-                "PASS",
-                "PWD",
-                "CWD",
-                "QUIT",
-                "TYPE",
-                "PORT",
-                "PASV",
-                "Server is now listening",
-                "servidor HTTP",
-                "servidor HTTPS",
-                "servidor FTP",
-                "Servidor escutando",
-                "Client connected",
-                "Cliente conectado",
-                "Request from",
-                "Requisição de"
+                "WWW",
+                "PATCH",
+                "DOWNLOAD",
+                "UPLOAD"
             };
-
-            string upperMessage = message.ToUpper();
             
             return webKeywords.Any(keyword => 
-                upperMessage.Contains(keyword.ToUpper()));
+                upperMessage.Contains(keyword));
+        }
+
+        private void WriteToAuth(string message)
+        {
+            if (authOutput.Dispatcher.CheckAccess())
+            {
+                authOutput.AppendText(message + Environment.NewLine);
+                authOutput.ScrollToEnd();
+            }
+            else
+            {
+                authOutput.Dispatcher.Invoke(() =>
+                {
+                    authOutput.AppendText(message + Environment.NewLine);
+                    authOutput.ScrollToEnd();
+                });
+            }
+        }
+
+        private void WriteToWeb(string message)
+        {
+            if (webOutput.Dispatcher.CheckAccess())
+            {
+                webOutput.AppendText(message + Environment.NewLine);
+                webOutput.ScrollToEnd();
+            }
+            else
+            {
+                webOutput.Dispatcher.Invoke(() =>
+                {
+                    webOutput.AppendText(message + Environment.NewLine);
+                    webOutput.ScrollToEnd();
+                });
+            }
         }
 
         public override Encoding Encoding

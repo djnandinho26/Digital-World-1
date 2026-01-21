@@ -43,7 +43,7 @@ namespace Digital_World.Network
             if (!Directory.Exists(rootPath))
             {
                 Directory.CreateDirectory(rootPath);
-                Console.WriteLine($"[HTTP] Criada pasta: {rootPath}");
+                MultiLogger.LogWeb($"[HTTP] Criada pasta: {rootPath}");
             }
 
             listener.Prefixes.Clear();
@@ -54,11 +54,11 @@ namespace Digital_World.Network
                 if (BindCertificate())
                 {
                     listener.Prefixes.Add($"https://+:{httpsPort}/");
-                    Console.WriteLine($"[HTTPS] Certificado configurado para porta {httpsPort}");
+                    MultiLogger.LogWeb($"[HTTPS] Certificado configurado para porta {httpsPort}");
                 }
                 else
                 {
-                    Console.WriteLine($"[HTTPS] Falha ao configurar certificado, apenas HTTP será usado");
+                    MultiLogger.LogWeb($"[HTTPS] Falha ao configurar certificado, apenas HTTP será usado");
                 }
             }
 
@@ -66,20 +66,20 @@ namespace Digital_World.Network
             {
                 listener.Start();
                 isRunning = true;
-                Console.WriteLine($"[HTTP] Servidor iniciado na porta {httpPort}");
+                MultiLogger.LogWeb($"[HTTP] Servidor iniciado na porta {httpPort}");
                 if (httpsEnabled && listener.Prefixes.Contains($"https://+:{httpsPort}/"))
-                    Console.WriteLine($"[HTTPS] Servidor seguro iniciado na porta {httpsPort}");
-                Console.WriteLine($"[HTTP] Servindo arquivos de: {rootPath}");
+                    MultiLogger.LogWeb($"[HTTPS] Servidor seguro iniciado na porta {httpsPort}");
+                MultiLogger.LogWeb($"[HTTP] Servindo arquivos de: {rootPath}");
 
                 Task.Run(() => Listen());
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[HTTP] Erro ao iniciar servidor: {ex.Message}");
-                Console.WriteLine($"[HTTP] Execute como Administrador ou use:");
-                Console.WriteLine($"  netsh http add urlacl url=http://+:{httpPort}/ user=Everyone");
+                MultiLogger.LogWeb($"[HTTP] Erro ao iniciar servidor: {ex.Message}");
+                MultiLogger.LogWeb($"[HTTP] Execute como Administrador ou use:");
+                MultiLogger.LogWeb($"  netsh http add urlacl url=http://+:{httpPort}/ user=Everyone");
                 if (httpsEnabled)
-                    Console.WriteLine($"  netsh http add urlacl url=https://+:{httpsPort}/ user=Everyone");
+                    MultiLogger.LogWeb($"  netsh http add urlacl url=https://+:{httpsPort}/ user=Everyone");
             }
         }
 
@@ -91,40 +91,40 @@ namespace Digital_World.Network
             string zeroSslPrivateKey = Path.Combine(certDir, "private.key");
 
             // Obter tipo de certificado da configuração
-            Console.WriteLine($"[HTTPS] Tipo de certificado configurado: {certificateType}");
+            MultiLogger.LogWeb($"[HTTPS] Tipo de certificado configurado: {certificateType}");
 
             // Se escolheu ZeroSSL, processar certificados ZeroSSL
             if (certificateType == "ZeroSSL")
             {
                 if (File.Exists(zeroSslCert) && File.Exists(zeroSslPrivateKey))
                 {
-                    Console.WriteLine($"[HTTPS] Certificados ZeroSSL detectados, processando...");
+                    MultiLogger.LogWeb($"[HTTPS] Certificados ZeroSSL detectados, processando...");
                     if (ConvertZeroSSLToPfx(zeroSslCert, zeroSslCaBundle, zeroSslPrivateKey))
                     {
-                        Console.WriteLine($"[HTTPS] ✓ Certificado ZeroSSL convertido para PFX");
+                        MultiLogger.LogWeb($"[HTTPS] ✓ Certificado ZeroSSL convertido para PFX");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"[HTTPS] ============================================");
-                    Console.WriteLine($"[HTTPS] CERTIFICADO ZEROSSSL NÃO ENCONTRADO!");
-                    Console.WriteLine($"[HTTPS] ============================================");
-                    Console.WriteLine($"[HTTPS] Por favor, copie os arquivos do ZeroSSL para:");
-                    Console.WriteLine($"[HTTPS]   {certDir}");
-                    Console.WriteLine($"[HTTPS] ");
-                    Console.WriteLine($"[HTTPS] Arquivos necessários:");
-                    Console.WriteLine($"[HTTPS]   - certificate.crt (certificado do domínio)");
-                    Console.WriteLine($"[HTTPS]   - ca_bundle.crt (cadeia CA)");
-                    Console.WriteLine($"[HTTPS]   - private.key (chave privada)");
-                    Console.WriteLine($"[HTTPS] ");
-                    Console.WriteLine($"[HTTPS] Como obter certificado gratuito ZeroSSL:");
-                    Console.WriteLine($"[HTTPS]   1. Acesse https://zerossl.com");
-                    Console.WriteLine($"[HTTPS]   2. Crie uma conta gratuita");
-                    Console.WriteLine($"[HTTPS]   3. Gere certificado para seu domínio (90 dias)");
-                    Console.WriteLine($"[HTTPS]   4. Baixe os 3 arquivos");
-                    Console.WriteLine($"[HTTPS]   5. Copie para a pasta cert\\");
-                    Console.WriteLine($"[HTTPS]   6. Reinicie o servidor");
-                    Console.WriteLine($"[HTTPS] ============================================");
+                    MultiLogger.LogWeb($"[HTTPS] ============================================");
+                    MultiLogger.LogWeb($"[HTTPS] CERTIFICADO ZEROSSSL NÃO ENCONTRADO!");
+                    MultiLogger.LogWeb($"[HTTPS] ============================================");
+                    MultiLogger.LogWeb($"[HTTPS] Por favor, copie os arquivos do ZeroSSL para:");
+                    MultiLogger.LogWeb($"[HTTPS]   {certDir}");
+                    MultiLogger.LogWeb($"[HTTPS] ");
+                    MultiLogger.LogWeb($"[HTTPS] Arquivos necessários:");
+                    MultiLogger.LogWeb($"[HTTPS]   - certificate.crt (certificado do domínio)");
+                    MultiLogger.LogWeb($"[HTTPS]   - ca_bundle.crt (cadeia CA)");
+                    MultiLogger.LogWeb($"[HTTPS]   - private.key (chave privada)");
+                    MultiLogger.LogWeb($"[HTTPS] ");
+                    MultiLogger.LogWeb($"[HTTPS] Como obter certificado gratuito ZeroSSL:");
+                    MultiLogger.LogWeb($"[HTTPS]   1. Acesse https://zerossl.com");
+                    MultiLogger.LogWeb($"[HTTPS]   2. Crie uma conta gratuita");
+                    MultiLogger.LogWeb($"[HTTPS]   3. Gere certificado para seu domínio (90 dias)");
+                    MultiLogger.LogWeb($"[HTTPS]   4. Baixe os 3 arquivos");
+                    MultiLogger.LogWeb($"[HTTPS]   5. Copie para a pasta cert\\");
+                    MultiLogger.LogWeb($"[HTTPS]   6. Reinicie o servidor");
+                    MultiLogger.LogWeb($"[HTTPS] ============================================");
                     return false;
                 }
             }
@@ -136,54 +136,54 @@ namespace Digital_World.Network
                 
                 if (validationResult == CertificateValidation.Valid)
                 {
-                    Console.WriteLine($"[HTTPS] ✓ Certificado válido encontrado: {certificatePath}");
+                    MultiLogger.LogWeb($"[HTTPS] ✓ Certificado válido encontrado: {certificatePath}");
                     return BindCertificateToPort();
                 }
                 else if (validationResult == CertificateValidation.Expired)
                 {
-                    Console.WriteLine($"[HTTPS] ============================================");
-                    Console.WriteLine($"[HTTPS] CERTIFICADO VENCIDO!");
-                    Console.WriteLine($"[HTTPS] ============================================");
-                    Console.WriteLine($"[HTTPS] Deletando certificado vencido: {certificatePath}");
+                    MultiLogger.LogWeb($"[HTTPS] ============================================");
+                    MultiLogger.LogWeb($"[HTTPS] CERTIFICADO VENCIDO!");
+                    MultiLogger.LogWeb($"[HTTPS] ============================================");
+                    MultiLogger.LogWeb($"[HTTPS] Deletando certificado vencido: {certificatePath}");
                     
                     try
                     {
                         File.Delete(certificatePath);
-                        Console.WriteLine($"[HTTPS] ✓ Certificado vencido deletado");
+                        MultiLogger.LogWeb($"[HTTPS] ✓ Certificado vencido deletado");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"[HTTPS] ✗ Erro ao deletar certificado: {ex.Message}");
+                        MultiLogger.LogWeb($"[HTTPS] ✗ Erro ao deletar certificado: {ex.Message}");
                     }
 
                     if (certificateType == "ZeroSSL")
                     {
-                        Console.WriteLine($"[HTTPS] ");
-                        Console.WriteLine($"[HTTPS] AÇÃO NECESSÁRIA:");
-                        Console.WriteLine($"[HTTPS] Por favor, obtenha um NOVO certificado ZeroSSL:");
-                        Console.WriteLine($"[HTTPS]   1. Acesse https://zerossl.com");
-                        Console.WriteLine($"[HTTPS]   2. Renove ou crie novo certificado (90 dias)");
-                        Console.WriteLine($"[HTTPS]   3. Baixe os 3 arquivos (certificate.crt, ca_bundle.crt, private.key)");
-                        Console.WriteLine($"[HTTPS]   4. Copie para: {certDir}");
-                        Console.WriteLine($"[HTTPS]   5. Reinicie o servidor");
-                        Console.WriteLine($"[HTTPS] ============================================");
+                        MultiLogger.LogWeb($"[HTTPS] ");
+                        MultiLogger.LogWeb($"[HTTPS] AÇÃO NECESSÁRIA:");
+                        MultiLogger.LogWeb($"[HTTPS] Por favor, obtenha um NOVO certificado ZeroSSL:");
+                        MultiLogger.LogWeb($"[HTTPS]   1. Acesse https://zerossl.com");
+                        MultiLogger.LogWeb($"[HTTPS]   2. Renove ou crie novo certificado (90 dias)");
+                        MultiLogger.LogWeb($"[HTTPS]   3. Baixe os 3 arquivos (certificate.crt, ca_bundle.crt, private.key)");
+                        MultiLogger.LogWeb($"[HTTPS]   4. Copie para: {certDir}");
+                        MultiLogger.LogWeb($"[HTTPS]   5. Reinicie o servidor");
+                        MultiLogger.LogWeb($"[HTTPS] ============================================");
                         return false;
                     }
                     else
                     {
-                        Console.WriteLine($"[HTTPS] Gerando novo certificado auto-assinado...");
+                        MultiLogger.LogWeb($"[HTTPS] Gerando novo certificado auto-assinado...");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"[HTTPS] ✗ Certificado inválido: {certificatePath}");
+                    MultiLogger.LogWeb($"[HTTPS] ✗ Certificado inválido: {certificatePath}");
                 }
             }
 
             // Gerar certificado auto-assinado se configurado ou se não houver certificado válido
             if (certificateType == "Auto" || certificateType != "ZeroSSL")
             {
-                Console.WriteLine($"[HTTPS] Gerando certificado auto-assinado...");
+                MultiLogger.LogWeb($"[HTTPS] Gerando certificado auto-assinado...");
                 if (GenerateSelfSignedCertificate())
                 {
                     return BindCertificateToPort();
@@ -209,38 +209,38 @@ namespace Digital_World.Network
                 // Verificar se está expirado
                 if (DateTime.Now < cert.NotBefore || DateTime.Now > cert.NotAfter)
                 {
-                    Console.WriteLine($"[HTTPS] ✗ Certificado expirado!");
-                    Console.WriteLine($"[HTTPS]   Válido de: {cert.NotBefore:dd/MM/yyyy HH:mm:ss}");
-                    Console.WriteLine($"[HTTPS]   Válido até: {cert.NotAfter:dd/MM/yyyy HH:mm:ss}");
-                    Console.WriteLine($"[HTTPS]   Data atual: {DateTime.Now:dd/MM/yyyy HH:mm:ss}");
+                    MultiLogger.LogWeb($"[HTTPS] ✗ Certificado expirado!");
+                    MultiLogger.LogWeb($"[HTTPS]   Válido de: {cert.NotBefore:dd/MM/yyyy HH:mm:ss}");
+                    MultiLogger.LogWeb($"[HTTPS]   Válido até: {cert.NotAfter:dd/MM/yyyy HH:mm:ss}");
+                    MultiLogger.LogWeb($"[HTTPS]   Data atual: {DateTime.Now:dd/MM/yyyy HH:mm:ss}");
                     return CertificateValidation.Expired;
                 }
                 
                 // Verificar se tem a chave privada
                 if (!cert.HasPrivateKey)
                 {
-                    Console.WriteLine($"[HTTPS] Certificado não possui chave privada");
+                    MultiLogger.LogWeb($"[HTTPS] Certificado não possui chave privada");
                     return CertificateValidation.Invalid;
                 }
                 
                 // Mostrar informações do certificado
-                Console.WriteLine($"[HTTPS] Certificado: {cert.Subject}");
-                Console.WriteLine($"[HTTPS] Emissor: {cert.Issuer}");
-                Console.WriteLine($"[HTTPS] Válido de {cert.NotBefore:dd/MM/yyyy} até {cert.NotAfter:dd/MM/yyyy}");
+                MultiLogger.LogWeb($"[HTTPS] Certificado: {cert.Subject}");
+                MultiLogger.LogWeb($"[HTTPS] Emissor: {cert.Issuer}");
+                MultiLogger.LogWeb($"[HTTPS] Válido de {cert.NotBefore:dd/MM/yyyy} até {cert.NotAfter:dd/MM/yyyy}");
                 
                 // Calcular dias restantes
                 int daysRemaining = (cert.NotAfter - DateTime.Now).Days;
                 if (daysRemaining <= 30)
                 {
-                    Console.WriteLine($"[HTTPS] ⚠ AVISO: Certificado expira em {daysRemaining} dias!");
+                    MultiLogger.LogWeb($"[HTTPS] ⚠ AVISO: Certificado expira em {daysRemaining} dias!");
                     if (cert.Issuer.Contains("ZeroSSL") || cert.Issuer.Contains("Let's Encrypt"))
                     {
-                        Console.WriteLine($"[HTTPS]   Renove em: https://zerossl.com");
+                        MultiLogger.LogWeb($"[HTTPS]   Renove em: https://zerossl.com");
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"[HTTPS] ✓ Certificado válido por mais {daysRemaining} dias");
+                    MultiLogger.LogWeb($"[HTTPS] ✓ Certificado válido por mais {daysRemaining} dias");
                 }
                 
                 // Identificar tipo de certificado
@@ -250,19 +250,19 @@ namespace Digital_World.Network
                 
                 if (isSelfSigned)
                 {
-                    Console.WriteLine($"[HTTPS] Tipo: Certificado auto-assinado");
+                    MultiLogger.LogWeb($"[HTTPS] Tipo: Certificado auto-assinado");
                 }
                 else
                 {
-                    Console.WriteLine($"[HTTPS] Tipo: Certificado CA (confiável)");
-                    Console.WriteLine($"[HTTPS] Emissor: {GetCertificateIssuerName(issuer)}");
+                    MultiLogger.LogWeb($"[HTTPS] Tipo: Certificado CA (confiável)");
+                    MultiLogger.LogWeb($"[HTTPS] Emissor: {GetCertificateIssuerName(issuer)}");
                 }
                 
                 return CertificateValidation.Valid;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[HTTPS] Erro ao validar certificado: {ex.Message}");
+                MultiLogger.LogWeb($"[HTTPS] Erro ao validar certificado: {ex.Message}");
                 return CertificateValidation.Invalid;
             }
         }
@@ -305,7 +305,7 @@ namespace Digital_World.Network
                 var cert = new X509Certificate2(certificatePath, password, X509KeyStorageFlags.MachineKeySet | X509KeyStorageFlags.PersistKeySet);
                 
                 // Importar certificado para o Windows Certificate Store
-                Console.WriteLine($"[HTTPS] Importando certificado para o Windows Certificate Store...");
+                MultiLogger.LogWeb($"[HTTPS] Importando certificado para o Windows Certificate Store...");
                 using (var store = new X509Store(StoreName.My, StoreLocation.LocalMachine))
                 {
                     store.Open(OpenFlags.ReadWrite);
@@ -320,14 +320,14 @@ namespace Digital_World.Network
                     // Adicionar novo certificado
                     store.Add(cert);
                     store.Close();
-                    Console.WriteLine($"[HTTPS] ✓ Certificado importado com sucesso");
+                    MultiLogger.LogWeb($"[HTTPS] ✓ Certificado importado com sucesso");
                 }
                 
                 // Obter thumbprint do certificado
                 string thumbprint = cert.Thumbprint;
                 string appId = "{00112233-4455-6677-8899-AABBCCDDEEFF}"; // GUID fixo para a aplicação
                 
-                Console.WriteLine($"[HTTPS] Fazendo binding do certificado (Thumbprint: {thumbprint})...");
+                MultiLogger.LogWeb($"[HTTPS] Fazendo binding do certificado (Thumbprint: {thumbprint})...");
                 
                 // Remover binding anterior se existir
                 var deleteCmd = $"netsh http delete sslcert ipport=0.0.0.0:{httpsPort}";
@@ -337,18 +337,18 @@ namespace Digital_World.Network
                 var addCmd = $"netsh http add sslcert ipport=0.0.0.0:{httpsPort} certhash={thumbprint} appid={appId}";
                 if (RunCommand(addCmd))
                 {
-                    Console.WriteLine($"[HTTPS] ✓ Certificado associado à porta {httpsPort}");
+                    MultiLogger.LogWeb($"[HTTPS] ✓ Certificado associado à porta {httpsPort}");
                     return true;
                 }
                 else
                 {
-                    Console.WriteLine($"[HTTPS] ✗ Falha ao associar certificado");
+                    MultiLogger.LogWeb($"[HTTPS] ✗ Falha ao associar certificado");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[HTTPS] Erro ao fazer binding: {ex.Message}");
+                MultiLogger.LogWeb($"[HTTPS] Erro ao fazer binding: {ex.Message}");
                 return false;
             }
         }
@@ -357,7 +357,7 @@ namespace Digital_World.Network
         {
             try
             {
-                Console.WriteLine($"[HTTPS] Convertendo certificados ZeroSSL para formato PFX...");
+                MultiLogger.LogWeb($"[HTTPS] Convertendo certificados ZeroSSL para formato PFX...");
                 
                 // Ler certificado
                 string certPem = File.ReadAllText(certFile);
@@ -367,7 +367,7 @@ namespace Digital_World.Network
                 if (File.Exists(caBundle))
                 {
                     caBundlePem = File.ReadAllText(caBundle);
-                    Console.WriteLine($"[HTTPS] CA Bundle encontrado: {Path.GetFileName(caBundle)}");
+                    MultiLogger.LogWeb($"[HTTPS] CA Bundle encontrado: {Path.GetFileName(caBundle)}");
                 }
                 
                 // Ler chave privada
@@ -420,7 +420,7 @@ namespace Digital_World.Network
                     
                     if (process.ExitCode == 0 && File.Exists(certificatePath))
                     {
-                        Console.WriteLine($"[HTTPS] ✓ Certificado ZeroSSL convertido com sucesso");
+                        MultiLogger.LogWeb($"[HTTPS] ✓ Certificado ZeroSSL convertido com sucesso");
                         
                         // Atualizar senha se estava vazia
                         if (string.IsNullOrEmpty(certificatePassword))
@@ -430,9 +430,9 @@ namespace Digital_World.Network
                     }
                     else
                     {
-                        Console.WriteLine($"[HTTPS] ✗ Erro ao converter certificado ZeroSSL");
+                        MultiLogger.LogWeb($"[HTTPS] ✗ Erro ao converter certificado ZeroSSL");
                         if (!string.IsNullOrWhiteSpace(error))
-                            Console.WriteLine($"[HTTPS] {error}");
+                            MultiLogger.LogWeb($"[HTTPS] {error}");
                         return false;
                     }
                 }
@@ -441,7 +441,7 @@ namespace Digital_World.Network
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[HTTPS] Erro ao converter certificados ZeroSSL: {ex.Message}");
+                MultiLogger.LogWeb($"[HTTPS] Erro ao converter certificados ZeroSSL: {ex.Message}");
                 return false;
             }
         }
@@ -470,9 +470,9 @@ namespace Digital_World.Network
                     if (process.ExitCode != 0 && !ignoreErrors)
                     {
                         if (!string.IsNullOrWhiteSpace(error))
-                            Console.WriteLine($"[HTTPS] Erro no comando: {error.Trim()}");
+                            MultiLogger.LogWeb($"[HTTPS] Erro no comando: {error.Trim()}");
                         if (!string.IsNullOrWhiteSpace(output))
-                            Console.WriteLine($"[HTTPS] Output: {output.Trim()}");
+                            MultiLogger.LogWeb($"[HTTPS] Output: {output.Trim()}");
                         return false;
                     }
                     
@@ -484,7 +484,7 @@ namespace Digital_World.Network
             catch (Exception ex)
             {
                 if (!ignoreErrors)
-                    Console.WriteLine($"[HTTPS] Erro ao executar comando: {ex.Message}");
+                    MultiLogger.LogWeb($"[HTTPS] Erro ao executar comando: {ex.Message}");
                 return false;
             }
         }
@@ -492,7 +492,7 @@ namespace Digital_World.Network
         {
             try
             {
-                Console.WriteLine($"[HTTPS] Gerando certificado auto-assinado...");
+                MultiLogger.LogWeb($"[HTTPS] Gerando certificado auto-assinado...");
                 
                 // Criar diretório se não existir
                 string certDir = Path.GetDirectoryName(certificatePath) ?? "";
@@ -536,9 +536,9 @@ namespace Digital_World.Network
                     
                     if (process.ExitCode == 0 && File.Exists(certificatePath))
                     {
-                        Console.WriteLine($"[HTTPS] ✓ Certificado gerado: {certificatePath}");
-                        Console.WriteLine($"[HTTPS] ✓ Senha: {password}");
-                        Console.WriteLine($"[HTTPS] ✓ Válido por 1 dia (apenas para testes)");
+                        MultiLogger.LogWeb($"[HTTPS] ✓ Certificado gerado: {certificatePath}");
+                        MultiLogger.LogWeb($"[HTTPS] ✓ Senha: {password}");
+                        MultiLogger.LogWeb($"[HTTPS] ✓ Válido por 1 dia (apenas para testes)");
                         
                         // Atualizar senha se estava vazia
                         if (string.IsNullOrEmpty(certificatePassword))
@@ -548,8 +548,8 @@ namespace Digital_World.Network
                     }
                     else
                     {
-                        Console.WriteLine($"[HTTPS] ✗ Erro ao gerar certificado: {error}");
-                        Console.WriteLine($"[HTTPS] Execute manualmente: C:\\DMOServer\\GenerateCertificate.ps1");
+                        MultiLogger.LogWeb($"[HTTPS] ✗ Erro ao gerar certificado: {error}");
+                        MultiLogger.LogWeb($"[HTTPS] Execute manualmente: C:\\DMOServer\\GenerateCertificate.ps1");
                         return false;
                     }
                 }
@@ -558,8 +558,8 @@ namespace Digital_World.Network
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[HTTPS] ✗ Erro ao gerar certificado: {ex.Message}");
-                Console.WriteLine($"[HTTPS] Execute manualmente: C:\\DMOServer\\GenerateCertificate.ps1");
+                MultiLogger.LogWeb($"[HTTPS] ✗ Erro ao gerar certificado: {ex.Message}");
+                MultiLogger.LogWeb($"[HTTPS] Execute manualmente: C:\\DMOServer\\GenerateCertificate.ps1");
                 return false;
             }
         }
@@ -585,7 +585,7 @@ namespace Digital_World.Network
                 catch (Exception ex)
                 {
                     if (isRunning)
-                        Console.WriteLine($"[HTTP] Erro no listener: {ex.Message}");
+                        MultiLogger.LogWeb($"[HTTP] Erro no listener: {ex.Message}");
                 }
             }
         }
@@ -615,19 +615,19 @@ namespace Digital_World.Network
                     response.StatusCode = 200;
                     response.OutputStream.Write(fileData, 0, fileData.Length);
 
-                    Console.WriteLine($"[HTTP] {request.HttpMethod} {requestedPath} - 200 OK ({fileData.Length} bytes)");
+                    MultiLogger.LogWeb($"[HTTP] {request.HttpMethod} {requestedPath} - 200 OK ({fileData.Length} bytes)");
                 }
                 else
                 {
                     SendError(response, 404, "File Not Found");
-                    Console.WriteLine($"[HTTP] {request.HttpMethod} {requestedPath} - 404 Not Found");
+                    MultiLogger.LogWeb($"[HTTP] {request.HttpMethod} {requestedPath} - 404 Not Found");
                 }
 
                 response.OutputStream.Close();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[HTTP] Erro ao processar requisição: {ex.Message}");
+                MultiLogger.LogWeb($"[HTTP] Erro ao processar requisição: {ex.Message}");
             }
         }
 
@@ -657,3 +657,4 @@ namespace Digital_World.Network
         }
     }
 }
+

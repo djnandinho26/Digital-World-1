@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,7 +54,7 @@ namespace Digital_World.Database
                     }
                 }
             }
-            Console.WriteLine("[DigimonDB] Loaded {0} digimon.", Digimon.Count);
+            MultiLogger.LogServer("[DigimonDB] Loaded {0} digimon.", Digimon.Count);
         }
 
         public static DigimonData GetDigimon(int Species)
@@ -121,3 +121,4 @@ namespace Digital_World.Database
         }
     }
 }
+

@@ -36,7 +36,7 @@ namespace Digital_World
             server.OnClose += new SocketWrapper.dlgClose(server_OnClose);
             server.OnRead += new SocketWrapper.dlgRead(PacketProcessor);
 
-            Logger l = new Logger(tLog);
+            MultiLogger _writer = new MultiLogger(tLog, tLog);
             //listClients.ItemsSource = clients;
 
             MapDB.Load("Data\\MapList.bin");

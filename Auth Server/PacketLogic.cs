@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Digital_World.Packets;
+using Digital_World.Helpers;
 
 namespace Digital_World
 {
@@ -29,7 +30,7 @@ namespace Digital_World
                         resp.Type(-2);
                         resp.WriteBytes(new byte[] { 0xcf, 0xa6, 0x8f, 0xd8, 0xb4, 0x4e });
                          * */
-                        Console.WriteLine("Accepted connection: {0}", client.m_socket.RemoteEndPoint);
+                        MultiLogger.LogServer("Accepted connection: {0}", client.m_socket.RemoteEndPoint);
 
                         packet.Skip(8);
                         ushort u1 = (ushort)packet.ReadShort();
@@ -44,17 +45,17 @@ namespace Digital_World
                         string user = Encoding.ASCII.GetString(buffer, 13, buffer[12]);
                         string pass = Encoding.ASCII.GetString(buffer, 15 + buffer[12], buffer[buffer[12] + 14]);
 
-                        Console.WriteLine("Receiving login request: {0}", user);
+                        MultiLogger.LogServer("Receiving login request: {0}", user);
 #if CREATE
                         SqlDB.CreateUser(user, pass);
-                        Console.WriteLine("Creating user {0}...", user);
+                        MultiLogger.LogServer("Creating user {0}...", user);
 #else
                         int success = SqlDB.Validate(client, user, pass);
                         switch (success)
                         {
                             case -1:
                                 //Banned or non-existent
-                                Console.WriteLine("Banned or nonexistent login: {0}", user);
+                                MultiLogger.LogServer("Banned or nonexistent login: {0}", user);
                                 client.Send(new Packets.Auth.LoginMessage(string.Format("This username has been banned.")));
                                 break;
                             case -2:
@@ -67,7 +68,7 @@ namespace Digital_World
                                 break;
                             default:
                                 //Normal Login
-                                Console.WriteLine("Successful login: {0}\n Sending Server List", user);
+                                MultiLogger.LogServer("Successful login: {0}\n Sending Server List", user);
                                 client.Send(new Packets.Auth.ServerList(SqlDB.GetServers(), user, client.Characters));
                                 break;
                         }
@@ -92,8 +93,8 @@ namespace Digital_World
                     break;
                 default:
                     {
-                        Console.WriteLine("Unknown Packet ID: {0}", packet.Type);
-                        Console.WriteLine(Packet.Visualize(buffer));
+                        MultiLogger.LogServer("Unknown Packet ID: {0}", packet.Type);
+                        MultiLogger.LogServer(Packet.Visualize(buffer));
                         break;
                     }
             }

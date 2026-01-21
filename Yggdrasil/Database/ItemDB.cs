@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -50,7 +50,7 @@ namespace Digital_World.Database
                     Items.Add(iData.ItemId, iData);
                 }
             }
-            Console.WriteLine("[ItemDB] Loaded {0} items.", Items.Count);
+            MultiLogger.LogServer("[ItemDB] Loaded {0} items.", Items.Count);
         }
 
         public static ItemData GetItem(int fullId)
@@ -118,3 +118,4 @@ namespace Digital_World.Database
         }
     }
 }
+
