@@ -153,7 +153,18 @@ namespace Digital_World.Network
                 else
                     handler.BeginReceive(state.buffer, 0, Client.BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), state);
             }
-            catch (ObjectDisposedException) { }
+            catch (ObjectDisposedException) 
+            { 
+                // Socket was closed during shutdown - this is expected
+            }
+            catch (SocketException ex) when (ex.ErrorCode == 995)
+            {
+                // Operation aborted - this happens when the server is stopped
+            }
+            catch (SocketException ex)
+            {
+                Console.WriteLine("Socket error in AcceptCallback: {0}", ex.Message);
+            }
             catch (Exception e)
             {
                 Console.WriteLine("ERROR: AcceptCallback\n{0}", e);
