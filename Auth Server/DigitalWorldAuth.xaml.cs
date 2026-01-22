@@ -43,6 +43,23 @@ namespace Digital_World
 
             Opt = Settings.Deserialize("Settings.json");
             
+            // Inicializar Entity Framework Core e criar banco de dados
+            try
+            {
+                SqlDB.InitializeEF(
+                    Opt.Database.Host,
+                    Opt.Database.Username,
+                    Opt.Database.Password,
+                    Opt.Database.Schema
+                );
+                MultiLogger.LogServer("[INFO] Database initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                MultiLogger.LogServer("[ERROR] Failed to initialize database: {0}", ex.Message);
+                MessageBox.Show($"Falha ao inicializar banco de dados:\n{ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            
             // Iniciar servidor HTTP/HTTPS
             httpServer = new HttpServer(
                 Opt.AuthServer.PatchPath, 

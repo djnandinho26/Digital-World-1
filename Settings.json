@@ -1,0 +1,64 @@
+{
+  "Database": {
+    "Host": "192.168.0.100",
+    "Username": "dmo",
+    "Password": "Tb6!kV7-yM!z7FS#BevB",
+    "Schema": "digitalworld"
+  },
+  "LobbyServer": {
+    "Host": "0.0.0.0",
+    "Port": 7030,
+    "AutoStart": true
+  },
+  "AuthServer": {
+    "HttpPort": 8080,
+    "HttpsPort": 8443,
+    "PatchPath": "C:\\DMOServer\\HttpServer\\www",
+    "HttpEnabled": true,
+    "HttpsEnabled": false,
+    "CertificatePath": "C:\\DMOServer\\HttpServer\\cert\\certificate.pfx",
+    "CertificatePassword": "",
+    "CertificateType": "Auto",
+    "FtpEnabled": false,
+    "FtpPort": 21,
+    "FtpUploadPath": "C:\\DMOServer\\HashResulLogs",
+    "FtpUsername": "upload",
+    "FtpPassword": "upload123",
+    "Host": "0.0.0.0",
+    "Port": 7029,
+    "AutoStart": true
+  },
+  "GameServer": {
+    "HatchRates": {
+      "Level1": {
+        "Success": 0.9,
+        "Failure": 0.1,
+        "Broken": 0
+      },
+      "Level2": {
+        "Success": 0.8,
+        "Failure": 0.15,
+        "Broken": 0.05
+      },
+      "Level3": {
+        "Success": 0.7,
+        "Failure": 0.25,
+        "Broken": 0.05
+      },
+      "Level4": {
+        "Success": 0.5,
+        "Failure": 0.35,
+        "Broken": 0.15
+      },
+      "Level5": {
+        "Success": 0.3,
+        "Failure": 0.5,
+        "Broken": 0.2
+      }
+    },
+    "SizeRanges": {},
+    "Host": "0.0.0.0",
+    "Port": 7000,
+    "AutoStart": false
+  }
+}

@@ -23,6 +23,24 @@ namespace Digital_World.Systems
         public Yggdrasil()
         {
             Opt = Settings.Deserialize();
+            
+            // Inicializar Entity Framework Core e criar banco de dados
+            try
+            {
+                SqlDB.InitializeEF(
+                    Opt.Database.Host,
+                    Opt.Database.Username,
+                    Opt.Database.Password,
+                    Opt.Database.Schema
+                );
+                MultiLogger.LogServer("[INFO] Database initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                MultiLogger.LogServer("[ERROR] Failed to initialize database: {0}", ex.Message);
+                System.Windows.MessageBox.Show($"Falha ao inicializar banco de dados:\n{ex.Message}", "Erro", 
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
 
             server = new SocketWrapper();
             server.OnAccept += new SocketWrapper.dlgAccept(server_OnAccept);

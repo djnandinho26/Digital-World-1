@@ -43,6 +43,23 @@ namespace Digital_World
             DigimonDB.Load("Data\\DigimonList.bin");
 
             Opt = Settings.Deserialize();
+            
+            // Inicializar Entity Framework Core e criar banco de dados
+            try
+            {
+                SqlDB.InitializeEF(
+                    Opt.Database.Host,
+                    Opt.Database.Username,
+                    Opt.Database.Password,
+                    Opt.Database.Schema
+                );
+                MultiLogger.LogServer("[INFO] Database initialized successfully");
+            }
+            catch (Exception ex)
+            {
+                MultiLogger.LogServer("[ERROR] Failed to initialize database: {0}", ex.Message);
+                MessageBox.Show($"Falha ao inicializar banco de dados:\n{ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 
             Console.WriteLine("This server is configured to route players to the game server at {0}:{1}",
                 Opt.GameServer.Host, Opt.GameServer.Port);

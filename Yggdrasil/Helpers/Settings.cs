@@ -401,7 +401,7 @@ namespace Digital_World.Helpers
                 settings.Serialize(jsonFileName);
             }
             
-            SqlDB.SetInfo(settings.Database.Host, settings.Database.Username, settings.Database.Password, settings.Database.Schema);
+            SqlDB.InitializeEF(settings.Database.Host, settings.Database.Username, settings.Database.Password, settings.Database.Schema);
             return settings;
         }
 

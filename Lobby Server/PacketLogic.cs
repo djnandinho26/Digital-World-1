@@ -33,7 +33,7 @@ namespace Digital_World
                         uint tAcct = packet.ReadUInt();
                         int tUni = packet.ReadInt();
 
-                        SqlDB.LoadUser(client, AcctId, UniId);
+                        SqlDB.LoadUserEF(client, AcctId, UniId);
                         List<Character> listTamers = SqlDB.GetCharacters(client.AccountID);
                         client.Send(new Packets.Lobby.CharList(listTamers));
                         break;
@@ -47,7 +47,7 @@ namespace Digital_World
                     {
                         //Name Availability
                         string name = packet.ReadString();
-                        if (SqlDB.NameAvail(name))
+                        if (!SqlDB.CharacterExists(name))
                             client.Send(new Packets.Lobby.NameCheck(1));
                         else
                             client.Send(new Packets.Lobby.NameCheck(0));
@@ -80,7 +80,7 @@ namespace Digital_World
                         bool canDelete = SqlDB.VerifyCode(client.AccountID, code);
                         if (canDelete)
                         {
-                            if (SqlDB.DeleteTamer(client.AccountID, slot))
+                            if (SqlDB.DeleteCharacter(client.AccountID, slot))
                                 client.Send(new Packets.Lobby.CharDelete(1));
                             else
                                 client.Send(new Packets.Lobby.CharDelete(0));

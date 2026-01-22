@@ -47,10 +47,10 @@ namespace Digital_World
 
                         MultiLogger.LogServer("Receiving login request: {0}", user);
 #if CREATE
-                        SqlDB.CreateUser(user, pass);
+                        SqlDB.CreateUserEF(user, pass);
                         MultiLogger.LogServer("Creating user {0}...", user);
 #else
-                        int success = SqlDB.Validate(client, user, pass);
+                        int success = SqlDB.ValidateEF(client, user, pass);
                         switch (success)
                         {
                             case -1:
@@ -69,7 +69,7 @@ namespace Digital_World
                             default:
                                 //Normal Login
                                 MultiLogger.LogServer("Successful login: {0}\n Sending Server List", user);
-                                client.Send(new Packets.Auth.ServerList(SqlDB.GetServers(), user, client.Characters));
+                                client.Send(new Packets.Auth.ServerList(SqlDB.GetServersEF(), user, client.Characters));
                                 break;
                         }
 #endif
@@ -80,13 +80,13 @@ namespace Digital_World
                         //Requesting IP of Server
                         int serverID = BitConverter.ToInt32(buffer, 4);
                         KeyValuePair<int, string> server = SqlDB.GetServer(serverID);
-                        SqlDB.LoadUser(client);
+                        SqlDB.LoadUserEF(client);
                         client.Send(new Packets.Auth.ServerIP(server.Value, server.Key, client.AccountID, client.UniqueID));
                         break;
                     }
                 case 0x6A5:
                     {
-                        client.Send(new Packets.Auth.ServerList(SqlDB.GetServers(), client.Username, client.Characters));
+                        client.Send(new Packets.Auth.ServerList(SqlDB.GetServersEF(), client.Username, client.Characters));
                         break;
                     }
                 case -3:
