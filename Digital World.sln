@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hypnos Server", "Hypnos Server\Hypnos Server.csproj", "{7258BB65-FECE-43B7-B3D0-C829617B0F64}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hypnos Server", "src\Ferramentas\Hypnos Server\Hypnos Server.csproj", "{7258BB65-FECE-43B7-B3D0-C829617B0F64}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Guilmon", "Guilmon\Guilmon.vcxproj", "{92AE5699-1E6A-44B6-8F17-EBA1C3382CF0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Guilmon", "src\Ferramentas\Guilmon\Guilmon.vcxproj", "{92AE5699-1E6A-44B6-8F17-EBA1C3382CF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yggdrasil", "Yggdrasil\Yggdrasil.csproj", "{F26E3C69-CF5A-4218-AC13-410D6B5A9E1D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yggdrasil", "src\Server\Yggdrasil\Yggdrasil.csproj", "{F26E3C69-CF5A-4218-AC13-410D6B5A9E1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth Server", "Auth Server\Auth Server.csproj", "{CB67DEA0-900C-40DE-B659-98CE28D5702E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth Server", "src\Server\Auth Server\Auth Server.csproj", "{CB67DEA0-900C-40DE-B659-98CE28D5702E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRCBreaker", "CRCBreaker\CRCBreaker.csproj", "{2F6C1C80-126E-4D29-A2CD-750FC9AECA6E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRCBreaker", "src\Ferramentas\CRCBreaker\CRCBreaker.csproj", "{2F6C1C80-126E-4D29-A2CD-750FC9AECA6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lobby Server", "Lobby Server\Lobby Server.csproj", "{44986DA3-C64C-4852-9AF0-A1CACE98E9FA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lobby Server", "src\Server\Lobby Server\Lobby Server.csproj", "{44986DA3-C64C-4852-9AF0-A1CACE98E9FA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{D90B83BD-FA5B-4EFB-89C8-5D3799869B1E}"
 EndProject
@@ -21,9 +21,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{71B918CC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packet Logger", "Packet Logger", "{B7356927-E590-4791-AEA7-4ED73CC2BBEF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digital World", "Digital World\Digital World.csproj", "{561DE568-B2E8-4087-BB3B-A15DD3A4E05B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digital World", "src\Server\Digital World\Digital World.csproj", "{561DE568-B2E8-4087-BB3B-A15DD3A4E05B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SRand", "SRand\SRand.vcxproj", "{09602B32-8DF9-4EAB-8EB5-9874D13F6614}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SRand", "src\Ferramentas\SRand\SRand.vcxproj", "{09602B32-8DF9-4EAB-8EB5-9874D13F6614}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
