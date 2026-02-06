@@ -57,7 +57,7 @@ namespace Digital_World.Helpers
             }
         }
 
-        public override void Write(string value)
+        public override void Write(string? value)
         {
             if (string.IsNullOrEmpty(value))
                 return;
@@ -86,7 +86,7 @@ namespace Digital_World.Helpers
             }
         }
 
-        public override void WriteLine(string value)
+        public override void WriteLine(string? value)
         {
             currentLine.Append(value);
             RouteMessage(currentLine.ToString());

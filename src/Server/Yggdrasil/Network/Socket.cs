@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Net;
 using Digital_World.Helpers;
 
@@ -32,7 +33,7 @@ namespace Digital_World.Network
             {
                 if (isRunning)
                 {
-                    MultiLogger.LogServer("[AVISO] Servidor já está em execução.");
+                    MultiLogger.LogServer("[AVISO] Servidor ja esta em execucao.");
                     return;
                 }
                 
@@ -55,7 +56,7 @@ namespace Digital_World.Network
             {
                 if (isRunning)
                 {
-                    MultiLogger.LogServer("[AVISO] Servidor já está em execução.");
+                    MultiLogger.LogServer("[AVISO] Servidor ja esta em execucao.");
                     return;
                 }
                 
@@ -71,7 +72,7 @@ namespace Digital_World.Network
         {
             if (!isRunning)
             {
-                MultiLogger.LogServer("[AVISO] Servidor já está parado.");
+                MultiLogger.LogServer("[AVISO] Servidor ja esta parado.");
                 return;
             }
             
@@ -155,7 +156,7 @@ namespace Digital_World.Network
             {
                 listener.Bind(localEP);
                 listener.Listen(100);
-                listener.NoDelay = true; // Desabilitar algoritmo Nagle para menor latência
+                listener.NoDelay = true; // Desabilitar algoritmo Nagle para menor latencia
 
                 MultiLogger.LogServer($"[INFO] Servidor escutando em {ipAddress}:{Port}");
                 isRunning = true;
@@ -183,7 +184,7 @@ namespace Digital_World.Network
             }
             catch (Exception e)
             {
-                MultiLogger.LogServer($"[ERRO] Erro crítico no servidor de socket:\n{e}");
+                MultiLogger.LogServer($"[ERRO] Erro critico no servidor de socket:\n{e}");
             }
             finally
             {
@@ -213,7 +214,18 @@ namespace Digital_World.Network
 
                 if (OnAccept != null)
                 {
-                    OnAccept.BeginInvoke(state, new AsyncCallback(ProcessedAccept), state);
+                    Task.Run(() =>
+                    {
+                        try
+                        {
+                            OnAccept(state);
+                            handler.BeginReceive(state.buffer, 0, Client.BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), state);
+                        }
+                        catch (Exception ex)
+                        {
+                            MultiLogger.LogServer($"[ERRO] Excecao em OnAccept: {ex.Message}");
+                        }
+                    });
                 }
                 else
                     handler.BeginReceive(state.buffer, 0, Client.BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), state);
@@ -228,18 +240,25 @@ namespace Digital_World.Network
             }
             catch (SocketException ex)
             {
-                MultiLogger.LogServer($"[ERRO] Socket error em AcceptCallback: {ex.Message} (Código: {ex.ErrorCode})");
+                MultiLogger.LogServer($"[ERRO] Socket error em AcceptCallback: {ex.Message} (Codigo: {ex.ErrorCode})");
             }
             catch (Exception e)
             {
-                MultiLogger.LogServer($"[ERRO] Exceção inesperada em AcceptCallback:\n{e}");
+                MultiLogger.LogServer($"[ERRO] Excecao inesperada em AcceptCallback:\n{e}");
             }
         }
 
-        private void ProcessedAccept(IAsyncResult ar)
-        {
-            OnAccept.EndInvoke(ar);
+        // MÃ©todo ProcessedAccept removido - agora usando Task.Run no AcceptCallback
+        // private void ProcessedAccept(IAsyncResult ar)
+        // {
+        //     OnAccept.EndInvoke(ar);
+        //     ...
+        // }
 
+        // Mantido para compatibilidade mas nÃ£o usado
+        private void ProcessedAccept_Obsolete(IAsyncResult ar)
+        {
+            // NÃ£o mais necessÃ¡rio com Task.Run
             Client state = (Client)ar.AsyncState;
             Socket handler = state.m_socket;
 
@@ -252,7 +271,13 @@ namespace Digital_World.Network
                 if (e is ObjectDisposedException || (e is SocketException))
                 {
                     if (OnClose != null)
-                        OnClose.BeginInvoke(state, new AsyncCallback(EndClose), state);
+                    {
+                        Task.Run(() =>
+                        {
+                            try { OnClose(state); }
+                            catch (Exception ex) { MultiLogger.LogServer($"[ERRO] OnClose: {ex.Message}"); }
+                        });
+                    }
                 }
                 else
                     throw;
@@ -269,6 +294,15 @@ namespace Digital_World.Network
 
                 if (bytesRead > 0)
                 {
+                    // Descriptografa os dados recebidos
+                    byte[] decryptedBuffer = new byte[bytesRead];
+                    Array.Copy(state.buffer, decryptedBuffer, bytesRead);
+                    decryptedBuffer = PacketCrypto.Decrypt(decryptedBuffer);
+                    
+                    // Garante que o buffer descriptografado tem tamanho suficiente
+                    int copyLength = Math.Min(bytesRead, decryptedBuffer.Length);
+                    Array.Copy(decryptedBuffer, 0, state.buffer, 0, copyLength);
+
                     int len = BitConverter.ToInt16(state.buffer, 0);
                     if (bytesRead != len)
                     {
@@ -277,23 +311,30 @@ namespace Digital_World.Network
                         if (state.oldBuffer != null && state.oldBuffer.Length != 0)
                         {
                             //And concat the two.
-                            byte[] buffer = new byte[bytesRead + state.oldBuffer.Length];
-                            Array.Copy(state.oldBuffer, buffer, state.oldBuffer.Length);
-                            Array.Copy(state.buffer, 0, buffer, state.oldBuffer.Length, bytesRead);
+                            int actualCopyLength = Math.Min(copyLength, state.buffer.Length);
+                            byte[] buffer = new byte[actualCopyLength + state.oldBuffer.Length];
+                            Array.Copy(state.oldBuffer, 0, buffer, 0, state.oldBuffer.Length);
+                            Array.Copy(state.buffer, 0, buffer, state.oldBuffer.Length, actualCopyLength);
                             state.buffer = buffer;
 
                             if (OnRead != null)
                             {
-                                byte[] buffer2 = new byte[bytesRead];
-                                Array.Copy(state.buffer, buffer2, bytesRead);
-                                OnRead.BeginInvoke(state, buffer2, bytesRead, new AsyncCallback(ProcessedRead), null);
+                                int readLength = Math.Min(actualCopyLength, state.buffer.Length);
+                                byte[] buffer2 = new byte[readLength];
+                                Array.Copy(state.buffer, 0, buffer2, 0, readLength);
+                                Task.Run(() =>
+                                {
+                                    try { OnRead(state, buffer2, readLength); }
+                                    catch (Exception ex) { MultiLogger.LogServer($"[ERRO] OnRead: {ex.Message}"); }
+                                });
                             }
                         }
                         else
                         {
                             //Otherwise, store the received data
-                            state.oldBuffer = new byte[state.buffer.Length];
-                            state.buffer.CopyTo(state.oldBuffer, 0);
+                            int storeLength = Math.Min(copyLength, state.buffer.Length);
+                            state.oldBuffer = new byte[storeLength];
+                            Array.Copy(state.buffer, 0, state.oldBuffer, 0, storeLength);
 
                             //And listen for more.
                             handler.BeginReceive(state.buffer, 0, Client.BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), state);
@@ -304,9 +345,14 @@ namespace Digital_World.Network
                     {
                         if (OnRead != null)
                         {
-                            byte[] buffer = new byte[bytesRead];
-                            Array.Copy(state.buffer, buffer, bytesRead);
-                            OnRead.BeginInvoke(state, buffer, bytesRead, new AsyncCallback(ProcessedRead), null);
+                            int actualLength = Math.Min(bytesRead, state.buffer.Length);
+                            byte[] buffer = new byte[actualLength];
+                            Array.Copy(state.buffer, 0, buffer, 0, actualLength);
+                            Task.Run(() =>
+                            {
+                                try { OnRead(state, buffer, actualLength); }
+                                catch (Exception ex) { MultiLogger.LogServer($"[ERRO] OnRead: {ex.Message}"); }
+                            });
                         }
                     }
                     handler.BeginReceive(state.buffer, 0, Client.BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), state);
@@ -315,24 +361,23 @@ namespace Digital_World.Network
             catch (Exception e)
             {
                 if (e is ObjectDisposedException || e is SocketException)
+                {
                     if (OnClose != null)
-                        OnClose.BeginInvoke(state, new AsyncCallback(EndClose), state);
-                    else
-                        throw;
+                    {
+                        Task.Run(() =>
+                        {
+                            try { OnClose(state); }
+                            catch (Exception ex) { MultiLogger.LogServer($"[ERRO] OnClose: {ex.Message}"); }
+                        });
+                    }
+                }
+                else
+                    throw;
             }
         }
 
-        private void ProcessedRead(IAsyncResult ar)
-        {
-            try
-            {
-                OnRead.EndInvoke(ar);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        }
+        // MÃ©todo ProcessedRead removido - nÃ£o mais necessÃ¡rio com Task.Run
+        // private void ProcessedRead(IAsyncResult ar) { ... }
 
         public void Send(Socket handler, byte[] buffer)
         {
@@ -340,7 +385,7 @@ namespace Digital_World.Network
                 throw new ArgumentNullException(nameof(handler));
             
             if (buffer == null || buffer.Length == 0)
-                throw new ArgumentException("Buffer não pode ser nulo ou vazio.", nameof(buffer));
+                throw new ArgumentException("Buffer nao pode ser nulo ou vazio.", nameof(buffer));
             
             if (!handler.Connected)
             {
@@ -368,7 +413,7 @@ namespace Digital_World.Network
             }
             catch (SocketException ex)
             {
-                MultiLogger.LogServer($"[ERRO] Erro de socket ao enviar dados: {ex.Message} (Código: {ex.ErrorCode})");
+                MultiLogger.LogServer($"[ERRO] Erro de socket ao enviar dados: {ex.Message} (Cï¿½digo: {ex.ErrorCode})");
             }
             catch (ObjectDisposedException)
             {
@@ -376,22 +421,12 @@ namespace Digital_World.Network
             }
             catch (Exception e)
             {
-                MultiLogger.LogServer($"[ERRO] Exceção ao enviar dados:\n{e}");
+                MultiLogger.LogServer($"[ERRO] Excecao ao enviar dados:\n{e}");
             }
         }
 
-        private void EndClose(IAsyncResult ar)
-        {
-            try
-            {
-                MultiLogger.LogServer("[INFO] Uma conexão foi fechada.");
-                OnClose.EndInvoke(ar);
-            }
-            catch (Exception ex)
-            {
-                MultiLogger.LogServer($"[ERRO] Exceção ao finalizar fechamento: {ex.Message}");
-            }
-        }
+        // MÃ©todo EndClose removido - nÃ£o mais necessÃ¡rio com Task.Run
+        // private void EndClose(IAsyncResult ar) { ... }
 
 
         public bool Running
@@ -430,7 +465,7 @@ namespace Digital_World.Network
                     }
                     catch (Exception ex)
                     {
-                        MultiLogger.LogServer($"[ERRO] Exceção ao parar servidor durante Dispose: {ex.Message}");
+                        MultiLogger.LogServer($"[ERRO] Excecao ao parar servidor durante Dispose: {ex.Message}");
                     }
                 }
                 
@@ -465,7 +500,7 @@ namespace Digital_World.Network
                     {
                         if (!tWorker.Join(TimeSpan.FromSeconds(5)))
                         {
-                            MultiLogger.LogServer("[AVISO] Thread do servidor não finalizou em 5 segundos.");
+                            MultiLogger.LogServer("[AVISO] Thread do servidor nao finalizou em 5 segundos.");
                         }
                     }
                     catch { }

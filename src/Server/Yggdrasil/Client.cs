@@ -5,6 +5,7 @@ using System.Text;
 using System.Net.Sockets;
 using Digital_World.Packets;
 using Digital_World.Entities;
+using Digital_World.Network;
 using System.Timers;
 
 namespace Digital_World
@@ -41,7 +42,10 @@ namespace Digital_World
         /// <param name="buffer"></param>
         public void Send(byte[] buffer)
         {
-            BeginSend(buffer);
+            // Criptografa o pacote antes de enviar
+            byte[] encryptedBuffer = PacketCrypto.Encrypt(buffer);
+            Helpers.MultiLogger.LogServer($"[DEBUG] Send: Original={buffer.Length}b, Encrypted={encryptedBuffer.Length}b, Status={PacketCrypto.EncryptionEnabled}");
+            BeginSend(encryptedBuffer);
         }
 
         /// <summary>
@@ -50,8 +54,11 @@ namespace Digital_World
         /// <param name="packet"></param>
         public void Send(IPacket packet)
         {
-
-            BeginSend(packet.ToArray());
+            // Criptografa o pacote antes de enviar
+            byte[] buffer = packet.ToArray();
+            byte[] encryptedBuffer = PacketCrypto.Encrypt(buffer);
+            Helpers.MultiLogger.LogServer($"[DEBUG] Send: Original={buffer.Length}b, Encrypted={encryptedBuffer.Length}b, Status={PacketCrypto.EncryptionEnabled}");
+            BeginSend(encryptedBuffer);
         }
 
         private void BeginSend(byte[] buffer)
@@ -120,14 +127,14 @@ namespace Digital_World
             Send(packet.ToArray());
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj.GetType() == typeof(Client))
+            if (obj?.GetType() == typeof(Client))
             {
-                if (this.Tamer != null && (obj as Client).Tamer != null)
-                    return (obj as Client).Tamer.CharacterId == this.Tamer.CharacterId;
+                if (this.Tamer != null && (obj as Client)!.Tamer != null)
+                    return (obj as Client)!.Tamer.CharacterId == this.Tamer.CharacterId;
                 else
-                    return (obj as Client).AccountID == this.AccountID;
+                    return (obj as Client)!.AccountID == this.AccountID;
             }
             return base.Equals(obj);
         }

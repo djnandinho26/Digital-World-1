@@ -34,15 +34,20 @@ namespace Digital_World.Entities
             ItemId = (ushort)itemId;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj.GetType() == typeof(Item))
+            if (obj?.GetType() == typeof(Item))
             {
                 Item o = (Item)obj;
                 return o.Handle == this.Handle;
             }
             else
                 return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Handle.GetHashCode();
         }
 
         public static bool operator ==(Item i1, Item i2)

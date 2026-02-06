@@ -18,6 +18,24 @@
         <Button Content="Start" Height="23" HorizontalAlignment="Right" Margin="0,0,93,29" Name="btnStart" VerticalAlignment="Bottom" Width="75" Click="btnStart_Click" />
         <StatusBar Height="23" VerticalAlignment="Bottom">
             <StatusBarItem Content="Digital World Lobby Server" Name="sbInfo1" />
+            <Separator/>
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox Name="chkEncryption" 
+                              Content="Criptografia" 
+                              IsChecked="True"
+                              Checked="chkEncryption_Changed"
+                              Unchecked="chkEncryption_Changed"
+                              VerticalAlignment="Center"
+                              Margin="5,0"/>
+                    <TextBlock Name="txtEncryptionStatus" 
+                               Text="ATIVA" 
+                               Foreground="LimeGreen"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"
+                               Margin="5,0"/>
+                </StackPanel>
+            </StatusBarItem>
         </StatusBar>
         <Menu Height="23" VerticalAlignment="Top" Margin="0,0,0,0">
             <MenuItem Header="Options" Name="mi_Options" Click="mi_Options_Click" />

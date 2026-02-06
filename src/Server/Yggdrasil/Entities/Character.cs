@@ -109,16 +109,21 @@ namespace Digital_World.Entities
             return string.Format("Tamer: Lv {1} {0}", Name, Level);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (typeof(Character) != obj.GetType())
+            if (typeof(Character) != obj?.GetType())
             {
                 return base.Equals(obj);
             }
             else
             {
-                return (obj as Character).AccountId == this.AccountId;
+                return (obj as Character)!.AccountId == this.AccountId;
             }
+        }
+
+        public override int GetHashCode()
+        {
+            return AccountId.GetHashCode();
         }
 
         public uint ProperModel

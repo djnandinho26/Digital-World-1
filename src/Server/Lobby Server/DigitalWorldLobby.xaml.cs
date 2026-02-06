@@ -128,5 +128,23 @@ namespace Digital_World
                 client.Send(new Packets.PacketFFEF(-15325));
             }
         }
+
+        private void chkEncryption_Changed(object sender, RoutedEventArgs e)
+        {
+            if (txtEncryptionStatus == null) return; // Evita erro durante inicialização XAML
+            
+            if (chkEncryption.IsChecked == true)
+            {
+                Tools.CryptoManager.EnableEncryption();
+                txtEncryptionStatus.Text = "ATIVA";
+                txtEncryptionStatus.Foreground = Brushes.LimeGreen;
+            }
+            else
+            {
+                Tools.CryptoManager.DisableEncryption();
+                txtEncryptionStatus.Text = "DESATIVADA";
+                txtEncryptionStatus.Foreground = Brushes.Red;
+            }
+        }
     }
 }
