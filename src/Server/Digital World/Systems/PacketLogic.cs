@@ -531,7 +531,7 @@ namespace Digital_World.Systems
                     }
                 default:
                     {
-                        MultiLogger.LogServer("Unknown Packet Type {0}\n{1}", packet.Type, packet);
+                        MultiLogger.LogServer("Tipo de Pacote Desconhecido {0}\n{1}", packet.Type, packet);
                         break;
                     }
             }

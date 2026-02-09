@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Digital_World.Helpers;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.IO;
 
 namespace Digital_World.Packets
 {
@@ -26,7 +27,7 @@ namespace Digital_World.Packets
             }
             else if (buffer.Length > length)
             {
-                Console.WriteLine("WARNING: This packet may contain other data.");
+                MultiLogger.LogServer($"AVISO: Este pacote pode conter outros dados.");
             }
             packet.Seek(4, SeekOrigin.Begin);
         }

@@ -294,6 +294,129 @@ namespace Digital_World.Network
 
                 if (bytesRead > 0)
                 {
+                    // Proteção: Limitar recebimento a 131KB
+                    if (state.accumulationBuffer.Length + bytesRead > Client.BUFFER_SIZE)
+                    {
+                        MultiLogger.LogServer("[AVISO] Buffer excedeu 131KB. Descartando dados excedentes.");
+                        state.accumulationBuffer = new byte[0];
+                        handler.BeginReceive(state.buffer, 0, Client.BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), state);
+                        return;
+                    }
+
+                    // Descriptografa os dados recebidos
+                    byte[] decryptedBuffer = new byte[bytesRead];
+                    Array.Copy(state.buffer, decryptedBuffer, bytesRead);
+                    decryptedBuffer = PacketCrypto.Decrypt(decryptedBuffer);
+                    
+                    // Acumula os dados recebidos
+                    byte[] newAccumulation = new byte[state.accumulationBuffer.Length + decryptedBuffer.Length];
+                    Array.Copy(state.accumulationBuffer, 0, newAccumulation, 0, state.accumulationBuffer.Length);
+                    Array.Copy(decryptedBuffer, 0, newAccumulation, state.accumulationBuffer.Length, decryptedBuffer.Length);
+                    state.accumulationBuffer = newAccumulation;
+
+                    // Processa múltiplos pacotes
+                    ProcessMultiplePackets(state, handler);
+
+                    // Zera o buffer principal para próxima leitura
+                    Array.Clear(state.buffer, 0, state.buffer.Length);
+
+                    handler.BeginReceive(state.buffer, 0, Client.BUFFER_SIZE, 0, new AsyncCallback(ReadCallback), state);
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                if (e is ObjectDisposedException || e is SocketException)
+                {
+                    if (OnClose != null)
+                    {
+                        Task.Run(() =>
+                        {
+                            try { OnClose(state); }
+                            catch (Exception ex) { MultiLogger.LogServer($"[ERRO] OnClose: {ex.Message}"); }
+                        });
+                    }
+                }
+                else
+                {
+                    MultiLogger.LogServer($"[ERRO] Exceção em ReadCallback: {e.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Processa múltiplos pacotes do buffer de acumulação
+        /// </summary>
+        private void ProcessMultiplePackets(Client state, Socket handler)
+        {
+            int offset = 0;
+            
+            while (offset < state.accumulationBuffer.Length)
+            {
+                // Verifica se há bytes suficientes para ler o tamanho do pacote
+                if (state.accumulationBuffer.Length - offset < 2)
+                {
+                    // Dados insuficientes, mantém no buffer para próxima leitura
+                    byte[] remaining = new byte[state.accumulationBuffer.Length - offset];
+                    Array.Copy(state.accumulationBuffer, offset, remaining, 0, remaining.Length);
+                    state.accumulationBuffer = remaining;
+                    return;
+                }
+
+                // Lê o tamanho do pacote (ushort)
+                ushort packetSize = BitConverter.ToUInt16(state.accumulationBuffer, offset);
+
+                // Validação: tamanho do pacote não pode exceder MAX_PACKET_SIZE
+                if (packetSize > Client.MAX_PACKET_SIZE || packetSize == 0)
+                {
+                    MultiLogger.LogServer($"[AVISO] Tamanho de pacote inválido: {packetSize}. Descartando buffer.");
+                    state.accumulationBuffer = new byte[0];
+                    return;
+                }
+
+                // Verifica se o pacote completo está disponível
+                if (state.accumulationBuffer.Length - offset < packetSize)
+                {
+                    // Pacote incompleto, mantém no buffer para próxima leitura
+                    byte[] remaining = new byte[state.accumulationBuffer.Length - offset];
+                    Array.Copy(state.accumulationBuffer, offset, remaining, 0, remaining.Length);
+                    state.accumulationBuffer = remaining;
+                    return;
+                }
+
+                // Extrai o pacote completo
+                byte[] packet = new byte[packetSize];
+                Array.Copy(state.accumulationBuffer, offset, packet, 0, packetSize);
+
+                // Processa o pacote
+                if (OnRead != null)
+                {
+                    Task.Run(() =>
+                    {
+                        try { OnRead(state, packet, packetSize); }
+                        catch (Exception ex) { MultiLogger.LogServer($"[ERRO] OnRead: {ex.Message}"); }
+                    });
+                }
+
+                // Avança o offset
+                offset += packetSize;
+            }
+
+            // Limpa o buffer de acumulação após processar todos os pacotes
+            state.accumulationBuffer = new byte[0];
+        }
+
+        // Método ReadCallback_Old mantido para referência
+        private void ReadCallback_Old(IAsyncResult ar)
+        {
+            Client state = (Client)ar.AsyncState;
+            Socket handler = state.m_socket;
+            try
+            {
+                int bytesRead = handler.EndReceive(ar);
+
+                if (bytesRead > 0)
+                {
                     // Descriptografa os dados recebidos
                     byte[] decryptedBuffer = new byte[bytesRead];
                     Array.Copy(state.buffer, decryptedBuffer, bytesRead);

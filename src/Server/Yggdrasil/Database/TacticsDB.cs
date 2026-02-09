@@ -35,7 +35,7 @@ namespace Digital_World.Database
                     //More data at the end. Digimon names and descriptions.
                 }
             }
-            MultiLogger.LogServer("[TacticsDB] Loaded {0} entries.", Tactics.Count);
+            MultiLogger.LogServer("[TacticsDB] Carregadas {0} entradas.", Tactics.Count);
         }
 
         public static TDBTactic Get(int ItemId)

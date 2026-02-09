@@ -33,11 +33,10 @@ namespace Digital_World.Systems
                     Opt.Database.Password,
                     Opt.Database.Schema
                 );
-                MultiLogger.LogServer("[INFO] Database initialized successfully");
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[ERROR] Failed to initialize database: {0}", ex.Message);
+                MultiLogger.LogServer("[ERRO] Falha ao inicializar banco de dados: {0}", ex.Message);
                 System.Windows.MessageBox.Show($"Falha ao inicializar banco de dados:\n{ex.Message}", "Erro", 
                     System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }

@@ -79,7 +79,7 @@ namespace Digital_World.Database
                     }
                 }
             }
-            MultiLogger.LogServer("[EvolutionDB] Loaded {0} Digimon evolutions",EvolutionList.Count);
+            MultiLogger.LogServer("[EvolutionDB] Carregadas {0} evoluções de Digimon",EvolutionList.Count);
         }
 
         public static EvolutionLine GetLine(int digiType, int evolvedType)

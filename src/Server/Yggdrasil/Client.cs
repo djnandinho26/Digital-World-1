@@ -13,9 +13,11 @@ namespace Digital_World
     public class Client : IDisposable
     {
         public Socket m_socket = null;
-        public const int BUFFER_SIZE = 4096;
+        public const int BUFFER_SIZE = 131072; // 128KB (131072 bytes) - limite de recebimento
+        public const int MAX_PACKET_SIZE = 500; // Tamanho máximo por pacote individual
         public byte[] buffer = new byte[BUFFER_SIZE];
         public byte[] oldBuffer;
+        public byte[] accumulationBuffer = new byte[0]; // Buffer para acumular dados recebidos
 
         private Timer myTimer = new Timer(10000);
 

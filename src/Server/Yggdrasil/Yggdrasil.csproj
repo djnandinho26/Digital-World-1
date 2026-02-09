@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
@@ -15,7 +14,6 @@
     <Deterministic>false</Deterministic>
     <NoWarn>$(NoWarn);SYSLIB0011;SYSLIB0006;SYSLIB0021;SYSLIB0057;CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8619;CS8622;CS8625;CS8629;CS4014</NoWarn>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -23,21 +21,18 @@
     <OutputPath>C:\DMOServer\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>C:\DMOServer\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)' == 'Complete'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>C:\DMOServer\</OutputPath>
     <DefineConstants>CODE_ANALYSIS;DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="NLua" Version="1.7.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.0" />
@@ -47,9 +42,8 @@
     </PackageReference>
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0" />
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
     <Exec Command="if exist Eazfuscator.NET.exe Eazfuscator.NET.exe &quot;$(TargetPath)&quot; --msbuild-project-path &quot;$(ProjectPath)&quot; --msbuild-project-configuration &quot;$(ConfigurationName)&quot; --msbuild-project-platform &quot;$(PlatformName)&quot; --msbuild-solution-path &quot;$(SolutionPath)&quot; -n --newline-flush -v 3.2" />
   </Target>
-
+  <Import Project="Yggdrasil.dotnet_reactor.targets" Condition="Exists('Yggdrasil.dotnet_reactor.targets')" />
 </Project>

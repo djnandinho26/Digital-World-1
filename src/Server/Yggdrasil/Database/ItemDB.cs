@@ -50,7 +50,7 @@ namespace Digital_World.Database
                     Items.Add(iData.ItemId, iData);
                 }
             }
-            MultiLogger.LogServer("[ItemDB] Loaded {0} items.", Items.Count);
+            MultiLogger.LogServer("[ItemDB] Carregados {0} itens.", Items.Count);
         }
 
         public static ItemData GetItem(int fullId)

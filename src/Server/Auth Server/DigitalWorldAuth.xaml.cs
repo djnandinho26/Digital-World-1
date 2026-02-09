@@ -52,11 +52,10 @@ namespace Digital_World
                     Opt.Database.Password,
                     Opt.Database.Schema
                 );
-                MultiLogger.LogServer("[INFO] Database initialized successfully");
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[ERROR] Failed to initialize database: {0}", ex.Message);
+                MultiLogger.LogServer("[ERRO] Falha ao inicializar banco de dados: {0}", ex.Message);
                 MessageBox.Show($"Falha ao inicializar banco de dados:\n{ex.Message}", "Erro", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             
@@ -85,10 +84,25 @@ namespace Digital_World
                 server.Listen(info);
                 
                 if (Opt.AuthServer.HttpEnabled)
+                {
                     httpServer.Start();
+                }
                     
                 if (Opt.AuthServer.FtpEnabled)
+                {
                     ftpServer.Start();
+                }
+                
+                // Aguardar um pouco para os servidores realmente iniciarem
+                System.Threading.Tasks.Task.Delay(200).ContinueWith(_ =>
+                {
+                    Dispatcher.Invoke(() => UpdateServerStatus());
+                });
+            }
+            else
+            {
+                // Atualizar status inicial
+                UpdateServerStatus();
             }
         }
 
@@ -126,6 +140,12 @@ namespace Digital_World
                 
             if (Opt.AuthServer.FtpEnabled && !ftpServer.IsRunning)
                 ftpServer.Start();
+                
+            // Aguardar um pouco para o servidor TCP realmente iniciar
+            System.Threading.Tasks.Task.Delay(200).ContinueWith(_ =>
+            {
+                Dispatcher.Invoke(() => UpdateServerStatus());
+            });
         }
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
@@ -143,6 +163,8 @@ namespace Digital_World
                 client.Send(new Packets.Auth.LoginMessage("Server is shutting down."));
                 client.m_socket.Close();
             }
+            
+            UpdateServerStatus();
         }
 
         private void mi_opt_Click(object sender, RoutedEventArgs e)
@@ -150,11 +172,15 @@ namespace Digital_World
             Options winOpt = new Options();
             if (winOpt.ShowDialog().Value)
             {
+                // Salvar estado dos servidores antes de parar
+                bool httpWasRunning = httpServer != null && httpServer.IsRunning;
+                bool ftpWasRunning = ftpServer != null && ftpServer.IsRunning;
+                
                 // Parar servidores ativos antes de recriar
-                if (httpServer != null && httpServer.IsRunning)
+                if (httpWasRunning)
                     httpServer.Stop();
                 
-                if (ftpServer != null && ftpServer.IsRunning)
+                if (ftpWasRunning)
                     ftpServer.Stop();
                 
                 Opt = Settings.Deserialize();
@@ -176,7 +202,41 @@ namespace Digital_World
                     Opt.AuthServer.FtpUsername,
                     Opt.AuthServer.FtpPassword
                 );
+                
+                // Reiniciar servidores se estavam rodando
+                if (httpWasRunning && Opt.AuthServer.HttpEnabled)
+                    httpServer.Start();
+                    
+                if (ftpWasRunning && Opt.AuthServer.FtpEnabled)
+                    ftpServer.Start();
+                
+                // Aguardar um pouco para os servidores realmente iniciarem
+                System.Threading.Tasks.Task.Delay(200).ContinueWith(_ =>
+                {
+                    Dispatcher.Invoke(() => UpdateServerStatus());
+                });
             }
+            else
+            {
+                UpdateServerStatus();
+            }
+        }
+
+        private void UpdateServerStatus()
+        {
+            // Atualizar status TCP
+            statusTcp.Fill = server.Running ? Brushes.LimeGreen : Brushes.Red;
+            
+            // Atualizar status HTTP - fica verde se o servidor HTTP está rodando
+            bool httpRunning = httpServer != null && httpServer.IsRunning && Opt.AuthServer.HttpEnabled;
+            statusHttp.Fill = httpRunning ? Brushes.LimeGreen : Brushes.Red;
+            
+            // Atualizar status HTTPS - fica verde se HTTPS está habilitado E o servidor está rodando
+            bool httpsRunning = httpServer != null && httpServer.IsRunning && Opt.AuthServer.HttpsEnabled;
+            statusHttps.Fill = httpsRunning ? Brushes.LimeGreen : Brushes.Red;
+            
+            // Atualizar status FTP
+            statusFtp.Fill = (ftpServer != null && ftpServer.IsRunning) ? Brushes.LimeGreen : Brushes.Red;
         }
 
         private void chkEncryption_Changed(object sender, RoutedEventArgs e)

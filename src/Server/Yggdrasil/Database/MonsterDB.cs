@@ -73,7 +73,7 @@ namespace Digital_World.Database
                     }
                 }
             }
-            MultiLogger.LogServer("[MonsterDB] Loaded {0} NPCs, {1} Digimon, {2} Maps.", NPCs.Count, Digimon.Count, Maps.Count);
+            MultiLogger.LogServer("[MonsterDB] Carregados {0} NPCs, {1} Digimon, {2} Mapas.", NPCs.Count, Digimon.Count, Maps.Count);
         }
 
         public static MDBDigimon GetDigimon(uint Id)

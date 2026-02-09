@@ -50,12 +50,10 @@ namespace Digital_World
                 _characterRepo = new Repository<Character>(context);
                 _digimonRepo = new Repository<DigimonEntity>(context);
                 _serverRepo = new Repository<Server>(context);
-
-                MultiLogger.LogServer("[INFO] Database initialized successfully");
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error initializing database: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro ao inicializar banco de dados: {0}", ex.Message);
                 throw;
             }
         }
@@ -126,7 +124,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in AuthenticateUser: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em AuthenticateUser: {0}", ex.Message);
                 return null;
             }
         }
@@ -144,7 +142,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in GetAccountById: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em GetAccountById: {0}", ex.Message);
                 return null;
             }
         }
@@ -162,7 +160,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in CharacterExists: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em CharacterExists: {0}", ex.Message);
                 return false;
             }
         }
@@ -180,7 +178,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in GetCharacterById: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em GetCharacterById: {0}", ex.Message);
                 return null;
             }
         }
@@ -198,7 +196,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in GetCharactersByAccountId: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em GetCharactersByAccountId: {0}", ex.Message);
                 return new System.Collections.Generic.List<Character>();
             }
         }
@@ -216,7 +214,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in GetDigimonById: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em GetDigimonById: {0}", ex.Message);
                 return null;
             }
         }
@@ -236,7 +234,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in UpdateCharacter: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em UpdateCharacter: {0}", ex.Message);
                 return false;
             }
         }
@@ -256,7 +254,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in UpdateDigimon: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em UpdateDigimon: {0}", ex.Message);
                 return false;
             }
         }
@@ -314,7 +312,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in DeleteCharacter: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em DeleteCharacter: {0}", ex.Message);
                 return false;
             }
         }
@@ -350,7 +348,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in CreateAccount: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em CreateAccount: {0}", ex.Message);
                 return false;
             }
         }
@@ -368,7 +366,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in GetServerList: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em GetServerList: {0}", ex.Message);
                 return new System.Collections.Generic.List<Server>();
             }
         }
@@ -393,7 +391,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in UpdateLastChar: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em UpdateLastChar: {0}", ex.Message);
                 return false;
             }
         }
@@ -453,7 +451,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in LoadUserEF: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em LoadUserEF: {0}", ex.Message);
             }
         }
 
@@ -479,7 +477,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in LoadUserEF: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em LoadUserEF: {0}", ex.Message);
             }
         }
 
@@ -503,7 +501,7 @@ namespace Digital_World
                 {
                     Username = username,
                     Password = HashPassword(password),
-                    Email = "",
+                    Email = "a@a.com",
                     UniId = 0,
                     Char1 = -1,
                     Char2 = -1,
@@ -523,7 +521,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in CreateUserEF: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em CreateUserEF: {0}", ex.Message);
                 return false;
             }
         }
@@ -542,7 +540,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in GetNumCharsEF: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em GetNumCharsEF: {0}", ex.Message);
                 return 0;
             }
         }
@@ -568,7 +566,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in GetServerEF: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em GetServerEF: {0}", ex.Message);
                 return (6999, "127.0.0.1");
             }
         }
@@ -597,7 +595,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in GetServersEF: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em GetServersEF: {0}", ex.Message);
                 return new Dictionary<int, string>();
             }
         }
@@ -622,7 +620,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in UpdateUniIdEF: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em UpdateUniIdEF: {0}", ex.Message);
             }
         }
 
@@ -640,7 +638,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in CountCharactersEF: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em CountCharactersEF: {0}", ex.Message);
                 client.Characters = 0;
             }
         }
@@ -672,12 +670,12 @@ namespace Digital_World
                 repo.Add(character);
                 context.SaveChanges();
                 
-                MultiLogger.LogServer("[INFO] Character created: {0} (ID: {1})", name, character.CharacterId);
+                MultiLogger.LogServer("[INFO] Personagem criado: {0} (ID: {1})", name, character.CharacterId);
                 return character.CharacterId;
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in CreateCharacter: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em CreateCharacter: {0}", ex.Message);
                 return -1;
             }
         }
@@ -708,12 +706,12 @@ namespace Digital_World
                 repo.Add(digimon);
                 context.SaveChanges();
                 
-                MultiLogger.LogServer("[INFO] Digimon created: {0} (ID: {1})", digiName, digimon.DigimonId);
+                MultiLogger.LogServer("[INFO] Digimon criado: {0} (ID: {1})", digiName, digimon.DigimonId);
                 return (uint)digimon.DigimonId;
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in CreateDigimon: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em CreateDigimon: {0}", ex.Message);
                 return 0;
             }
         }
@@ -734,12 +732,12 @@ namespace Digital_World
                     character.Partner = digimonId;
                     repo.Update(character);
                     context.SaveChanges();
-                    MultiLogger.LogServer("[INFO] Partner set: Char {0} -> Digi {1}", characterId, digimonId);
+                    MultiLogger.LogServer("[INFO] Parceiro definido: Char {0} -> Digi {1}", characterId, digimonId);
                 }
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in SetPartner: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em SetPartner: {0}", ex.Message);
             }
         }
 
@@ -759,12 +757,12 @@ namespace Digital_World
                     digimon.CharacterId = characterId;
                     repo.Update(digimon);
                     context.SaveChanges();
-                    MultiLogger.LogServer("[INFO] Tamer set: Digi {0} -> Char {1}", digimonId, characterId);
+                    MultiLogger.LogServer("[INFO] Tamer definido: Digi {0} -> Char {1}", digimonId, characterId);
                 }
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in SetTamer: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em SetTamer: {0}", ex.Message);
             }
         }
 
@@ -789,7 +787,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in VerifyCode: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em VerifyCode: {0}", ex.Message);
                 return false;
             }
         }
@@ -827,7 +825,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in ValidateEF: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em ValidateEF: {0}", ex.Message);
                 level = -1; // Erro
             }
             return level;
@@ -844,7 +842,7 @@ namespace Digital_World
         {
             try
             {
-                MultiLogger.LogServer("[INFO] LoadTamer: Method needs full implementation");
+                MultiLogger.LogServer("[INFO] LoadTamer: Método precisa de implementação completa");
                 // TODO: Este método precisa:
                 // 1. Carregar Character da DB pelo AccountID
                 // 2. Converter para Entities.Character (classe de jogo)
@@ -854,7 +852,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in LoadTamer: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em LoadTamer: {0}", ex.Message);
             }
         }
 
@@ -866,7 +864,7 @@ namespace Digital_World
         {
             try
             {
-                MultiLogger.LogServer("[INFO] SaveTamer: Method needs full implementation");
+                MultiLogger.LogServer("[INFO] SaveTamer: Método precisa de implementação completa");
                 // TODO: Este método precisa:
                 // 1. Converter client.Tamer (Entities.Character) para Data.Entities.Character
                 // 2. Serializar inventário, warehouse, archive para BLOBs
@@ -875,7 +873,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in SaveTamer: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em SaveTamer: {0}", ex.Message);
             }
         }
 
@@ -887,12 +885,12 @@ namespace Digital_World
         {
             try
             {
-                MultiLogger.LogServer("[INFO] SaveTamerPosition: Method needs full implementation");
+                MultiLogger.LogServer("[INFO] SaveTamerPosition: Método precisa de implementação completa");
                 // TODO: Atualizar apenas Map, X, Y do Character
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in SaveTamerPosition: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em SaveTamerPosition: {0}", ex.Message);
             }
         }
 
@@ -904,7 +902,7 @@ namespace Digital_World
         {
             try
             {
-                MultiLogger.LogServer("[INFO] LoadDigimon: Method needs full implementation");
+                MultiLogger.LogServer("[INFO] LoadDigimon: Método precisa de implementação completa");
                 // TODO: Este método precisa:
                 // 1. Carregar DigimonEntity da DB
                 // 2. Converter para Entities.Digimon (classe de jogo)
@@ -913,7 +911,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in LoadDigimon: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em LoadDigimon: {0}", ex.Message);
                 return null;
             }
         }
@@ -926,7 +924,7 @@ namespace Digital_World
         {
             try
             {
-                MultiLogger.LogServer("[INFO] SaveDigimon: Method needs full implementation");
+                MultiLogger.LogServer("[INFO] SaveDigimon: Método precisa de implementação completa");
                 // TODO: Este método precisa:
                 // 1. Converter Entities.Digimon para Data.Entities.DigimonEntity
                 // 2. Serializar evolutions para BLOB
@@ -934,7 +932,7 @@ namespace Digital_World
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in SaveDigimon: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em SaveDigimon: {0}", ex.Message);
             }
         }
 
@@ -954,12 +952,12 @@ namespace Digital_World
         {
             try
             {
-                MultiLogger.LogServer("[INFO] GetCharacters: Method needs full conversion implementation");
+                MultiLogger.LogServer("[INFO] GetCharacters: Método precisa de implementação de conversão completa");
                 return new System.Collections.Generic.List<Entities.Character>();
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in GetCharacters: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em GetCharacters: {0}", ex.Message);
                 return new System.Collections.Generic.List<Entities.Character>();
             }
         }
@@ -1007,7 +1005,7 @@ namespace Digital_World
             {
                 // TODO: Implementar busca por accountId e slot quando schema tiver campo slot
                 // Por enquanto retorna posi��o padr�o
-                MultiLogger.LogServer("[INFO] GetTamerPosition(accountId={0}, slot={1}): Returning default position - needs implementation", accountId, slot);
+                MultiLogger.LogServer("[INFO] GetTamerPosition(accountId={0}, slot={1}): Retornando posição padrão - precisa de implementação", accountId, slot);
                 return new Position(5300, 33000, 31000);
             }
             catch (Exception ex)
@@ -1025,13 +1023,13 @@ namespace Digital_World
         {
             try
             {
-                MultiLogger.LogServer("[INFO] CreateMercenary: Method needs implementation");
+                MultiLogger.LogServer("[INFO] CreateMercenary: Método precisa de implementação");
                 // TODO: Criar Digimon mercenário no banco
                 return 0; // Retorna 0 em caso de erro, ID do digimon em sucesso
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in CreateMercenary: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em CreateMercenary: {0}", ex.Message);
                 return 0;
             }
         }
@@ -1043,13 +1041,13 @@ namespace Digital_World
         {
             try
             {
-                MultiLogger.LogServer("[INFO] GetDigimon: Method needs implementation");
+                MultiLogger.LogServer("[INFO] GetDigimon: Método precisa de implementação");
                 // TODO: Carregar DigimonEntity e converter para Entities.Digimon
                 return null;
             }
             catch (Exception ex)
             {
-                MultiLogger.LogServer("[INFO] Error in GetDigimon: {0}", ex.Message);
+                MultiLogger.LogServer("[INFO] Erro em GetDigimon: {0}", ex.Message);
                 return null;
             }
         }

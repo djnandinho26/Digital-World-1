@@ -54,7 +54,7 @@ namespace Digital_World.Database
                     }
                 }
             }
-            MultiLogger.LogServer("[DigimonDB] Loaded {0} digimon.", Digimon.Count);
+            MultiLogger.LogServer("[DigimonDB] Carregados {0} digimon.", Digimon.Count);
         }
 
         public static DigimonData GetDigimon(int Species)

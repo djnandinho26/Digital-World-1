@@ -44,7 +44,7 @@ namespace Digital_World.Database
                     }
                 }
             }
-            MultiLogger.LogServer("[PortalDB] Loaded {0} portals", PortalList.Count);
+            MultiLogger.LogServer("[PortalDB] Carregados {0} portais", PortalList.Count);
         }
 
         public static Portal GetPortal(int portalId)

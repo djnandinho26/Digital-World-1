@@ -76,6 +76,19 @@
                                Margin="5,0,0,0"/>
                 </StackPanel>
             </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="TCP:" Margin="0,0,5,0"/>
+                    <Ellipse Name="statusTcp" Width="12" Height="12" Fill="Red" Margin="0,0,10,0"/>
+                    <TextBlock Text="HTTP:" Margin="0,0,5,0"/>
+                    <Ellipse Name="statusHttp" Width="12" Height="12" Fill="Red" Margin="0,0,10,0"/>
+                    <TextBlock Text="HTTPS:" Margin="0,0,5,0"/>
+                    <Ellipse Name="statusHttps" Width="12" Height="12" Fill="Red" Margin="0,0,10,0"/>
+                    <TextBlock Text="FTP:" Margin="0,0,5,0"/>
+                    <Ellipse Name="statusFtp" Width="12" Height="12" Fill="Red" Margin="0,0,0,0"/>
+                </StackPanel>
+            </StatusBarItem>
         </StatusBar>
     </Grid>
 </Window>

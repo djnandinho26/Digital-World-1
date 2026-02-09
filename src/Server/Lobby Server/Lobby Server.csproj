@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
@@ -15,7 +14,6 @@
     <Deterministic>false</Deterministic>
     <NoWarn>$(NoWarn);CS8600;CS8601;CS8602;CS8603;CS8604;CS8618;CS8625;CS8629</NoWarn>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
@@ -24,7 +22,6 @@
     <OutputPath>C:\DMOServer\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
@@ -32,7 +29,6 @@
     <OutputPath>C:\DMOServer\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Complete|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
@@ -40,19 +36,16 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
   </PropertyGroup>
-
   <ItemGroup>
     <None Update="Data\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Yggdrasil\Yggdrasil.csproj" />
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
     <Exec Command="if exist Eazfuscator.NET.exe Eazfuscator.NET.exe &quot;$(TargetPath)&quot; --msbuild-project-path &quot;$(ProjectPath)&quot; --msbuild-project-configuration &quot;$(ConfigurationName)&quot; --msbuild-project-platform &quot;$(PlatformName)&quot; --msbuild-solution-path &quot;$(SolutionPath)&quot; -n --newline-flush -v 3.2" />
   </Target>
-
+  <Import Project="Lobby Server.dotnet_reactor.targets" Condition="Exists('Lobby Server.dotnet_reactor.targets')" />
 </Project>

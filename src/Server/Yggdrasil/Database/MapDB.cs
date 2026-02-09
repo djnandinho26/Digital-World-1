@@ -36,7 +36,7 @@ namespace Digital_World.Database
                     }
                 }
             }
-            MultiLogger.LogServer("[MapDB] Loaded {0} maps.", MapList.Count);
+            MultiLogger.LogServer("[MapDB] Carregados {0} mapas.", MapList.Count);
         }
 
         public static MapData GetMap(int mapId)

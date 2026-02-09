@@ -33,7 +33,7 @@ namespace Digital_World.Data
                 settings.Database = new DatabaseSettings
                 {
                     Host = "192.168.0.100",
-                    Username = "dmo",
+                    Username = "root",
                     Password = "Tb6!kV7-yM!z7FS#BevB",
                     Schema = "digitalworld"
                 };
